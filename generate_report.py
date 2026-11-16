@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 ReportTerm5 - Automated Cooperative Training Report Generator
-Project: Riaya Medical Diagnostics Platform (منصة رعاية)
+Project: Riaya Medical Diagnostics Platform
 Student: Shadia Essa Al-Enezi (ID: 202304937)
 Organization: Al-Hait General Hospital (Hail Health Cluster)
 Supervisor: Al-Bandari Al-Otaibi
@@ -16,6 +16,7 @@ from lxml import etree
 import docx
 from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml import parse_xml
 from report_builder_core import (
     BASE_DIR, REPO_DIR, TEMPLATE_DOCX, OUTPUT_DIR, OUTPUT_DOCX, REPORT_EXPORT_DOCX,
     UOH_LOGO, ORG_MEDIA, DIAG_DIR, SCREEN_DIR,
@@ -33,11 +34,16 @@ def build_report():
     # Load golden template
     doc = docx.Document(TEMPLATE_DOCX)
 
-    # Clear existing body paragraphs and tables while preserving styles & sectPr
-    for p in list(doc.paragraphs):
-        p._p.getparent().remove(p._p)
-    for t in list(doc.tables):
-        t._tbl.getparent().remove(t._tbl)
+    # Capture Section 0 (Cover Page) XML properties
+    s0_xml = doc.sections[0]._sectPr.xml
+
+    # Completely wipe ALL body elements (paragraphs, tables, orphan SDT / TOC)
+    # preserving ONLY the final sectPr for Section 1
+    body = doc._body._element
+    for child in list(body):
+        if child.tag.endswith('sectPr'):
+            continue
+        body.remove(child)
 
     # Track sequence numbers per chapter
     fig_counts = {1: 0, 2: 0, 3: 0, 4: 0}
@@ -111,43 +117,32 @@ def build_report():
     set_para_format(p_sub_val, before_pt=2, after_pt=24, line_spacing=1.15, align=WD_ALIGN_PARAGRAPH.CENTER)
     r = p_sub_val.add_run("Shadia Essa Al-Enezi        | 202304937")
     set_run_font(r, "Times New Roman", 18, bold=True, color=COLOR_DARK_BLUE)
-
-    doc.add_page_break()
+    # Attach Section 0 properties to end Cover Page cleanly (no header, no footer, no page number)
+    # This automatically creates a section break to Page 2 without an extra blank page
+    p_sub_val._p.get_or_add_pPr().append(parse_xml(s0_xml))
 
     print("Building Preliminary Sections...")
     # ---------------------------------------------------------
-    # ABSTRACT
+    # ABSTRACT (Strict ~3/4 Page, 100% English)
     # ---------------------------------------------------------
     add_h1(doc, "Abstract")
     add_paragraph_styled(doc,
-        "This cooperative training report encapsulates the professional and technical internship undertaken at Al-Hait General Hospital, a primary healthcare institution affiliated with the Hail Health Cluster and the Ministry of Health in the Kingdom of Saudi Arabia. Undertaken as a mandatory degree requirement for the Bachelor of Science in Computer Science at the University of Hail, College of Computer Science and Engineering, the training program was designed to bridge academic theoretical principles with practical healthcare informatics and enterprise IT operations. During the internship, comprehensive responsibilities were fulfilled across the hospital's digital infrastructure, including computer hardware auditing, operating system deployment and maintenance, local network administration, IP configuration, printer troubleshooting, endpoint protection, and clinical staff technical support.")
+        "This cooperative training report encapsulates the professional and technical internship undertaken at Al-Hait General Hospital, a primary healthcare institution operating under the governance of the Hail Health Cluster and the Ministry of Health in the Kingdom of Saudi Arabia. Undertaken to fulfill the graduation requirements for the Bachelor of Science in Computer Science at the University of Hail, College of Computer Science and Engineering, the training program bridged academic computing principles with healthcare informatics and hospital IT infrastructure. Key operational responsibilities included computer hardware auditing, operating system deployment and maintenance, local area network (LAN) administration, TCP/IP configuration, endpoint cybersecurity, and end-user clinical support across emergency, outpatient, inpatient, and diagnostic divisions.")
 
     add_paragraph_styled(doc,
-        "Building upon the insights acquired regarding the operational bottlenecks of medical laboratory diagnostic workflows, a major technical project titled 'Riaya' (منصة رعاية — Intelligent Diagnostic Auditing and Medical Report Platform) was conceptualized, architected, and fully implemented. Clinical laboratory data constitutes over seventy percent of diagnostic decision-making, yet conventional laboratory information systems present severe friction: patients receive complex reports filled with impenetrable medical jargon and raw numerical figures, critical life-threatening values ('panic limits') risk delayed clinical notification, and attending physicians frequently lack instant longitudinal delta tracking or automated protection against redundant 48-hour repeat orders.")
-
-    add_paragraph_styled(doc,
-        "Riaya was developed as a full-stack, enterprise-grade medical web platform built on PHP 8.2 utilizing a custom Model-View-Controller (MVC) architecture, an extensively normalized relational MySQL database (InnoDB), and robust cryptographic role-based access control (RBAC) supporting five dedicated operational actors: System Administrator, Receptionist, Treating Physician, Laboratory Specialist, and Patient. The platform integrates international clinical informatics standards, specifically Logical Observation Identifiers Names and Codes (LOINC) mapped dynamically via the National Library of Medicine (NLM) web services, and International Classification of Diseases, Tenth Revision (ICD-10) coding for standardized diagnostic profiling. Furthermore, Riaya incorporates a deterministic ClinicalEngine that evaluates incoming quantitative test results against verified reference ranges from Mayo Clinic Laboratories and ARUP Laboratories, instantly triggering urgent STAT alerts when life-threatening panic limits are exceeded. An integrated zero-PII generative artificial intelligence pipeline powered by OpenRouter LLM translates complex laboratory findings into compassionate, clear, educational Arabic explanations for patients without exposing protected health information. The resulting platform demonstrates exceptional performance, zero diagnostic hallucination, strict adherence to cybersecurity standards, and significant clinical utility.")
+        "To overcome clinical laboratory workflow bottlenecks, a full-stack web platform titled 'Riaya' (Intelligent Diagnostic Auditing and Medical Report Platform) was designed and implemented using PHP 8.2 MVC, MySQL, and role-based access control. The platform integrates international standards including Logical Observation Identifiers Names and Codes (LOINC) and International Classification of Diseases (ICD-10). Its deterministic ClinicalEngine verifies laboratory values against Mayo Clinic and ARUP reference intervals, triggering instant STAT alerts for life-threatening panic limits while preventing duplicate 48-hour testing. A zero-PII generative artificial intelligence pipeline powered by OpenRouter LLM translates complex lab findings into clear, educational explanations for patients. The resulting platform delivers robust clinical governance, high performance, and enhanced healthcare accessibility.")
 
     doc.add_page_break()
 
     # ---------------------------------------------------------
-    # ACKNOWLEDGMENTS
+    # ACKNOWLEDGMENTS (Strict <= 1/2 Page, 100% English)
     # ---------------------------------------------------------
     add_h1(doc, "Acknowledgments")
     add_paragraph_styled(doc,
-        "First and foremost, all praise, gratitude, and adoration are due to Almighty Allah for bestowing upon me the strength, endurance, health, and enlightenment required to successfully complete this cooperative training program and bring this comprehensive technical report to fruition.")
+        "First and foremost, all praise, gratitude, and adoration are due to Almighty Allah for bestowing upon me the strength, perseverance, and enlightenment required to successfully complete this cooperative training program and bring this technical report to fruition.")
 
     add_paragraph_styled(doc,
-        "I express my most profound gratitude and highest esteem to my esteemed Academic Advisor, Al-Bandari Al-Otaibi, whose academic stewardship, insightful critiques, continuous encouragement, and high intellectual standards were invaluable throughout this internship. Her scholarly guidance in aligning academic rigor with real-world computer science applications significantly elevated the depth and quality of this work.")
-
-    add_paragraph_styled(doc,
-        "My sincere appreciation is extended to the leadership, IT administration, medical staff, and technical supervisors at Al-Hait General Hospital and the Hail Health Cluster. I am deeply thankful for their hospitality, trust, and professional guidance, providing an inspiring clinical and technical environment that allowed me to observe enterprise healthcare information systems firsthand, engage with daily infrastructure challenges, and contribute effectively to operational workflows.")
-
-    add_paragraph_styled(doc,
-        "I also wish to convey my heartfelt indebtedness to the leadership and faculty members of the College of Computer Science and Engineering at the University of Hail for establishing an academic curriculum that empowers students with rigorous technical acumen, analytical problem-solving abilities, and ethical professional conduct.")
-
-    add_paragraph_styled(doc,
-        "Finally, my deepest love, devotion, and gratitude belong to my beloved family. Their unconditional love, boundless patience, constant prayers, and sacrifices have served as the bedrock of my educational journey and personal aspirations.")
+        "I express my profound gratitude to my academic advisor, Al-Bandari Al-Otaibi, for her scholarly stewardship, continuous encouragement, and constructive critiques throughout this internship. Sincere appreciation is also extended to the leadership, IT administration, medical staff, and technical supervisors at Al-Hait General Hospital and the Hail Health Cluster for their professional hospitality and mentorship. Furthermore, I convey my heartfelt thanks to the faculty of the College of Computer Science and Engineering at the University of Hail, and to my beloved family for their unconditional love, patience, and constant prayers.")
 
     doc.add_page_break()
 
@@ -195,7 +190,7 @@ def build_report():
         bold_prefix="• Chapter II (Tasks & Experiences): ")
 
     add_paragraph_styled(doc,
-        "Documents the full engineering lifecycle of 'Riaya' (منصة رعاية), detailing its clinical problem statement, software requirements, database modeling, unified design diagrams, role-based user interfaces, and automated quality assurance.",
+        "Documents the full engineering lifecycle of 'Riaya' (Intelligent Diagnostic Auditing and Medical Report Platform), detailing its clinical problem statement, software requirements, database modeling, unified design diagrams, role-based user interfaces, and automated quality assurance.",
         bold_prefix="• Chapter III (Coop Project — Riaya): ")
 
     add_paragraph_styled(doc,
@@ -212,7 +207,7 @@ def build_report():
 
     add_h2(doc, "1.1 Introduction")
     add_paragraph_styled(doc,
-        "The Kingdom of Saudi Arabia is presently experiencing an unprecedented transformation across its social, economic, and institutional landscapes, catalyzed by the visionary directives of Saudi Vision 2030. At the heart of this comprehensive national development plan lies the Health Sector Transformation Program (HSTP), which seeks to restructure the national healthcare delivery model into an integrated, efficient, patient-centered, and digitally advanced ecosystem. Through the establishment of regional Health Clusters (تجمعات صحية) under the auspices of the Ministry of Health (MOH) and the Center for National Health Insurance (CNHI), public healthcare facilities across Saudi Arabia are actively transitioning from siloed regional directorates toward decentralized, accountable care organizations focused on preventive health, universal coverage, clinical governance, and comprehensive digital enablement.")
+        "The Kingdom of Saudi Arabia is presently experiencing an unprecedented transformation across its social, economic, and institutional landscapes, catalyzed by the visionary directives of Saudi Vision 2030. At the heart of this comprehensive national development plan lies the Health Sector Transformation Program (HSTP), which seeks to restructure the national healthcare delivery model into an integrated, efficient, patient-centered, and digitally advanced ecosystem. Through the establishment of regional Health Clusters under the auspices of the Ministry of Health (MOH) and the Center for National Health Insurance (CNHI), public healthcare facilities across Saudi Arabia are actively transitioning from siloed regional directorates toward decentralized, accountable care organizations focused on preventive health, universal coverage, clinical governance, and comprehensive digital enablement.")
 
     add_paragraph_styled(doc,
         "In this transforming healthcare landscape, secondary and peripheral general hospitals fulfill a vital strategic role. These regional facilities serve as the frontline defense against acute illnesses, trauma emergencies, and chronic disease burdens for populations residing in outlying governorates and rural centers, substantially reducing the logistical necessity for patients to travel hundreds of kilometers to tertiary metropolitan medical cities. However, the operational efficacy of regional hospitals is intrinsically tied to the robustness of their health informatics systems, hardware infrastructure, and technical support frameworks. When clinical applications, laboratory networks, and diagnostic imaging archives function seamlessly, clinical practitioners can deliver timely, evidence-based care, thereby directly reducing morbidity and mortality rates.")
@@ -221,14 +216,14 @@ def build_report():
 
     add_h3(doc, "Relevant Work")
     add_paragraph_styled(doc,
-        "Healthcare delivery within the Hail Region has undergone substantial modernization under the administrative oversight of the Hail Health Cluster (تجمع حائل الصحي). As an accountable integrated health network, the Hail Health Cluster oversees a comprehensive continuum of care comprising major urban specialized hospitals (such as King Khalid Hospital and Hail General Hospital), peripheral general hospitals situated across various governorates, specialized dental and cardiac centers, and an expansive network of Primary Healthcare Centers (PHCs). Within this regional matrix, peripheral hospitals function as essential clinical hubs that deliver urgent triage, inpatient admission, surgical interventions, maternal-child healthcare, and outpatient clinical consultations.")
+        "Healthcare delivery within the Hail Region has undergone substantial modernization under the administrative oversight of the Hail Health Cluster. As an accountable integrated health network, the Hail Health Cluster oversees a comprehensive continuum of care comprising major urban specialized hospitals (such as King Khalid Hospital and Hail General Hospital), peripheral general hospitals situated across various governorates, specialized dental and cardiac centers, and an expansive network of Primary Healthcare Centers (PHCs). Within this regional matrix, peripheral hospitals function as essential clinical hubs that deliver urgent triage, inpatient admission, surgical interventions, maternal-child healthcare, and outpatient clinical consultations.")
 
     add_paragraph_styled(doc,
         "Digital health initiatives across the Hail Health Cluster emphasize the phased adoption of standardized electronic medical records, centralized telemedicine connections with regional tertiary consultants, electronic laboratory ordering, and digital diagnostic reporting. Understanding the institutional, structural, and technical attributes of a peripheral hospital operating within this network is imperative for analyzing where software automation and clinical intelligence can resolve systemic communication friction.")
 
     add_h3(doc, "1.2.1 What is Training Organization.?")
     add_paragraph_styled(doc,
-        "Al-Hait General Hospital (مستشفى الحائط العام) is a state-funded public secondary healthcare institution operating under the governance of the Hail Health Cluster and the Ministry of Health. Geographically situated in Al-Hait Governorate, approximately 250 kilometers south of Hail City, the hospital functions as the primary medical facility serving the local population of the governorate and dozens of surrounding rural villages, desert communities, and municipal centers. The hospital operates as a 50-bed general healthcare facility equipped with specialized diagnostic, surgical, maternal, and emergency units designed to deliver comprehensive medical care.")
+        "Al-Hait General Hospital is a state-funded public secondary healthcare institution operating under the governance of the Hail Health Cluster and the Ministry of Health. Geographically situated in Al-Hait Governorate, approximately 250 kilometers south of Hail City, the hospital functions as the primary medical facility serving the local population of the governorate and dozens of surrounding rural villages, desert communities, and municipal centers. The hospital operates as a 50-bed general healthcare facility equipped with specialized diagnostic, surgical, maternal, and emergency units designed to deliver comprehensive medical care.")
 
     # Figure 1.1: Al-Hait General Hospital placed right beneath the opening paragraph
     img_hosp = os.path.join(ORG_MEDIA, 'hospital_facility.jpg')
@@ -248,7 +243,7 @@ def build_report():
         "Following extensive construction and infrastructure development, Al-Hait General Hospital commenced its initial phased operational activation in early 2014 (corresponding to Rabi' Al-Thani 1435 AH). The opening was inaugurated with the commissioning of the 24-hour Emergency and Acute Care Department and primary outpatient clinics, bringing immediate relief to thousands of local families. Over subsequent years, operational capacity was systematically expanded to incorporate advanced inpatient surgical suites, an expanded Obstetrics and Gynecology department, dedicated pediatric wards, and advanced medical imaging equipment.")
 
     add_paragraph_styled(doc,
-        "A monumental milestone in the hospital's history occurred with the commissioning of the specialized Artificial Hemodialysis Center (مركز غسيل الكلى). Prior to this opening, chronic kidney failure patients within the governorate were forced to travel weekly to distant cities for life-sustaining hemodialysis sessions. The local hemodialysis center significantly mitigated patient physical suffering and financial burden. In recent years, under the administrative restructuring of the Saudi healthcare sector, Al-Hait General Hospital was formally integrated into the Hail Health Cluster, aligning its clinical protocols, quality assurance methodologies, and IT systems with national health transformation standards.")
+        "A monumental milestone in the hospital's history occurred with the commissioning of the specialized Artificial Hemodialysis Center. Prior to this opening, chronic kidney failure patients within the governorate were forced to travel weekly to distant cities for life-sustaining hemodialysis sessions. The local hemodialysis center significantly mitigated patient physical suffering and financial burden. In recent years, under the administrative restructuring of the Saudi healthcare sector, Al-Hait General Hospital was formally integrated into the Hail Health Cluster, aligning its clinical protocols, quality assurance methodologies, and IT systems with national health transformation standards.")
 
     add_h3(doc, "1.2.3 Overview of Training Organization")
     add_paragraph_styled(doc,
@@ -436,7 +431,7 @@ def build_report():
 
     add_h2(doc, "3.2 Project Overview")
     add_paragraph_styled(doc,
-        "To resolve these systemic challenges, 'Riaya' (منصة رعاية — Intelligent Diagnostic Auditing and Medical Report Platform) was conceived, engineered, and delivered as an enterprise web application. Riaya is an integrated clinical web platform that analyzes laboratory results instantaneously upon release, simplifies diagnostic meanings for patients into clear, reassuring Arabic, highlights abnormal and critical indicators against standardized clinical ranges, visualizes longitudinal comparative trends against historical baselines, and automatically triggers immediate STAT emergency alerts to attending physicians upon detecting critical values.")
+        "To resolve these systemic challenges, 'Riaya' (Intelligent Diagnostic Auditing and Medical Report Platform) was conceived, engineered, and delivered as an enterprise web application. Riaya is an integrated clinical web platform that analyzes laboratory results instantaneously upon release, simplifies diagnostic meanings for patients into clear, reassuring Arabic, highlights abnormal and critical indicators against standardized clinical ranges, visualizes longitudinal comparative trends against historical baselines, and automatically triggers immediate STAT emergency alerts to attending physicians upon detecting critical values.")
 
     add_paragraph_styled(doc,
         "Riaya is engineered utilizing a high-performance backend powered by PHP 8.2 adhering to a custom Model-View-Controller (MVC) software architecture, a relational MySQL database (InnoDB) fully normalized to Third Normal Form (3NF), and a responsive modern frontend constructed with semantic HTML5, CSS3 Custom Properties, and Vanilla JavaScript (ES6+). The platform integrates international medical standards including Logical Observation Identifiers Names and Codes (LOINC) via live National Library of Medicine (NLM) RESTful web services, and International Classification of Diseases (ICD-10) coding for diagnosis linking. Furthermore, Riaya incorporates a deterministic ClinicalEngine built upon verified clinical reference ranges from Mayo Clinic Laboratories and ARUP Laboratories, paired with a Zero-PII Generative Artificial Intelligence pipeline via OpenRouter LLM for safe, compassionate patient educational report interpretations.")
@@ -791,7 +786,7 @@ def build_report():
         "The cooperative training program completed at Al-Hait General Hospital, under the auspices of the College of Computer Science and Engineering at the University of Hail, represented an invaluable capstone experience that successfully fused academic computing principles with the demanding operational realities of enterprise healthcare information technology. By embedding within the hospital's IT and technical support operations, direct contributions were made toward maintaining critical hardware infrastructure, restoring lagging workstations, securing local area networks, resolving printer driver bottlenecks, and supporting clinical staff across administrative, outpatient, and medical records departments.")
 
     add_paragraph_styled(doc,
-        "Concurrently, the internship fostered acute awareness of the communication barriers and diagnostic inefficiencies present in conventional healthcare delivery. This direct clinical exposure culminated in the architectural design, implementation, and successful delivery of 'Riaya' (منصة رعاية). By uniting modern web engineering in PHP 8.2 and MySQL with international medical vocabularies (LOINC and ICD-10), deterministic reference range engines, proactive STAT critical alert mechanisms, and Zero-PII generative AI educational interpretation, Riaya proves that well-architected software can bridge the cognitive gap between complex medical diagnostics and patient comprehension while establishing life-saving safety nets for attending physicians. The knowledge, problem-solving independence, and technical confidence gained throughout this cooperative journey provide a solid foundation for future professional excellence in computer science and healthcare informatics.")
+        "Concurrently, the internship fostered acute awareness of the communication barriers and diagnostic inefficiencies present in conventional healthcare delivery. This direct clinical exposure culminated in the architectural design, implementation, and successful delivery of 'Riaya'. By uniting modern web engineering in PHP 8.2 and MySQL with international medical vocabularies (LOINC and ICD-10), deterministic reference range engines, proactive STAT critical alert mechanisms, and Zero-PII generative AI educational interpretation, Riaya proves that well-architected software can bridge the cognitive gap between complex medical diagnostics and patient comprehension while establishing life-saving safety nets for attending physicians. The knowledge, problem-solving independence, and technical confidence gained throughout this cooperative journey provide a solid foundation for future professional excellence in computer science and healthcare informatics.")
 
     add_h2(doc, "Recommendations")
     add_paragraph_styled(doc,
@@ -833,7 +828,7 @@ def build_report():
         ("ARUP Laboratories", "2024", "Laboratory Test Directory and Critical Values Guidelines", "https://www.aruplab.com/"),
         ("OpenRouter", "2024", "OpenRouter AI API Documentation — Unified Interface for Advanced Large Language Models", "https://openrouter.ai/docs"),
         ("Ministry of Health (MOH), Kingdom of Saudi Arabia", "2024", "Health Sector Transformation Program & Digital Health Strategy Overview", "https://www.moh.gov.sa/"),
-        ("Hail Health Cluster (تجمع حائل الصحي)", "2024", "Official Portal of the Hail Health Cluster — Facilities and Services Directory", "https://hailthy.net/"),
+        ("Hail Health Cluster", "2024", "Official Portal of the Hail Health Cluster — Facilities and Services Directory", "https://hailthy.net/"),
         ("Saudi Central Board for Accreditation of Healthcare Institutions (CBAHI)", "2023", "National Standards for Hospitals (3rd Edition)", "https://cbahi.gov.sa/"),
         ("The PHP Group", "2024", "PHP 8.2 Documentation & Language Reference Manual", "https://www.php.net/manual/en/"),
         ("Oracle Corporation", "2024", "MySQL 8.0 Reference Manual — InnoDB Storage Engine Architecture", "https://dev.mysql.com/doc/refman/8.0/en/"),

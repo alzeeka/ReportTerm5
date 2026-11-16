@@ -2,6 +2,7 @@ import docx
 import zipfile
 import os
 import shutil
+from docx.oxml import parse_xml
 from report_builder_core import (
     TEMPLATE_DOCX, REPO_DIR, COLOR_DARK_BLUE, COLOR_MED_BLUE,
     set_run_font, set_para_format, add_paragraph_styled,
@@ -10,12 +11,21 @@ from report_builder_core import (
 
 def make_clean_template():
     doc = docx.Document(TEMPLATE_DOCX)
-    for p in list(doc.paragraphs):
-        p._p.getparent().remove(p._p)
-    for t in list(doc.tables):
-        t._tbl.getparent().remove(t._tbl)
+    
+    # 1. Capture Section 0 (Cover Page) XML properties
+    s0_xml = doc.sections[0]._sectPr.xml
 
-    # Cover Page
+    # 2. Completely wipe ALL body elements (paragraphs, tables, orphan SDT / TOC)
+    # preserving ONLY the final sectPr for Section 1
+    body = doc._body._element
+    for child in list(body):
+        if child.tag.endswith('sectPr'):
+            continue
+        body.remove(child)
+
+    # ---------------------------------------------------------
+    # COVER PAGE (Section 0: No Header, No Footer, No Page Number)
+    # ---------------------------------------------------------
     p_logo = doc.add_paragraph()
     set_para_format(p_logo, before_pt=20, after_pt=12, line_spacing=1.0, align=docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER)
     r_logo = p_logo.add_run()
@@ -66,18 +76,24 @@ def make_clean_template():
     set_para_format(p_sub_val, before_pt=2, after_pt=24, line_spacing=1.15, align=docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER)
     r = p_sub_val.add_run("[Student Name]        | [Student ID]")
     set_run_font(r, "Times New Roman", 18, bold=True, color=COLOR_DARK_BLUE)
+    # Attach Section 0 properties to end Cover Page cleanly (no header, no footer, no page number)
+    # This automatically transitions to Section 1 (Page 2) with headers and footers enabled
+    p_sub_val._p.get_or_add_pPr().append(parse_xml(s0_xml))
 
-    doc.add_page_break()
-
-    # Front matter
+    # ---------------------------------------------------------
+    # SECTION 1: PRELIMINARY PAGES (Page Numbers, 100% English)
+    # ---------------------------------------------------------
+    # Abstract (Strict ~3/4 Page, ~220 words)
     add_h1(doc, "Abstract")
-    add_paragraph_styled(doc, "[Insert executive abstract summarizing the training organization, core responsibilities, and capstone project here.]")
+    add_paragraph_styled(doc, "[Insert executive abstract summarizing the training organization, core responsibilities, and capstone project here. Guideline: Exactly ~3/4 page in length, ~200-220 words across 2 structured paragraphs. Strictly 100% English with no Arabic characters or phrases.]")
     doc.add_page_break()
 
+    # Acknowledgments (Strict <= 1/2 Page, ~110 words)
     add_h1(doc, "Acknowledgments")
-    add_paragraph_styled(doc, "[Insert acknowledgments expressing gratitude to advisors, faculty, employers, and family here.]")
+    add_paragraph_styled(doc, "[Insert acknowledgments expressing gratitude to Almighty Allah, advisors, hospital/organization leadership, faculty, and family here. Guideline: Half a page or less (<= 1/2 page, ~100-120 words). Strictly 100% English.]")
     doc.add_page_break()
 
+    # Single Table of Contents (No duplicate before cover page)
     add_h1(doc, "Table of Contents")
     add_field_paragraph(doc, r'TOC \h \o "1-3"')
     doc.add_page_break()
@@ -102,7 +118,7 @@ def make_clean_template():
     add_h3(doc, "Relevant Work")
     add_paragraph_styled(doc, "[Insert relevant institutional ecosystem and regional healthcare network overview.]")
     add_h3(doc, "1.2.1 What is Training Organization.?")
-    add_paragraph_styled(doc, "[Insert introductory overview of the training entity. Note: Insert Figure 1.1 immediately beneath this paragraph.]")
+    add_paragraph_styled(doc, "[Insert introductory overview of the training entity. Note: Insert Figure 1.1 immediately beneath this opening paragraph.]")
     add_h3(doc, "1.2.2 History of Training Organization")
     add_paragraph_styled(doc, "[Insert historical background, founding milestones, and expansion phases.]")
     add_h3(doc, "1.2.3 Overview of Training Organization")
@@ -119,7 +135,7 @@ def make_clean_template():
     add_h1(doc, "CHAPTER II:  TASKS & EXPERIENCES")
     add_h2(doc, "2.1 Requirements Analysis")
     add_h3(doc, "2.1.1 Technical support")
-    add_paragraph_styled(doc, "[Detail workstation maintenance, operating system deployment, hardware troubleshooting, and printer support.]")
+    add_paragraph_styled(doc, "[Detail workstation maintenance, operating system deployment, hardware troubleshooting, and printer support. Note: Do NOT mention months or duration.]")
     add_h3(doc, "2.1.2 Apps and system")
     add_paragraph_styled(doc, "[Detail enterprise software deployment, security scans, data tracking in Excel, and user instructional manuals.]")
     add_h3(doc, "2.1.3 Networks & Communications")
@@ -152,7 +168,7 @@ def make_clean_template():
     doc.add_page_break()
 
     # Chapter IV
-    add_h1(doc, "CHAPTER IV:  CONCLUSION")
+    add_h1(doc, "CHAPTER IV:  CONCLUSION & RECOMMENDATIONS")
     add_h2(doc, "Conclusion")
     add_paragraph_styled(doc, "[Synthesize key takeaways, professional growth, and capstone project achievements.]")
     add_h2(doc, "Recommendations")
@@ -161,7 +177,7 @@ def make_clean_template():
 
     # References
     add_h1(doc, "References")
-    add_paragraph_styled(doc, "[Insert full bibliographic references in APA format with functional URLs.]")
+    add_paragraph_styled(doc, "[Insert full bibliographic references in APA format with functional URLs. Strictly 100% English.]")
 
     clean_docx = os.path.join(REPO_DIR, 'template_term5.docx')
     doc.save(clean_docx)
