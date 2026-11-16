@@ -16,7 +16,7 @@ def make_clean_template():
     s0_xml = doc.sections[0]._sectPr.xml
 
     # 2. Completely wipe ALL body elements (paragraphs, tables, orphan SDT / TOC)
-    # preserving ONLY the final sectPr for Section 1
+    # preserving ONLY the final sectPr for the document
     body = doc._body._element
     for child in list(body):
         if child.tag.endswith('sectPr'):
@@ -77,18 +77,17 @@ def make_clean_template():
     r = p_sub_val.add_run("[Student Name]        | [Student ID]")
     set_run_font(r, "Times New Roman", 18, bold=True, color=COLOR_DARK_BLUE)
     # Attach Section 0 properties to end Cover Page cleanly (no header, no footer, no page number)
-    # This automatically transitions to Section 1 (Page 2) with headers and footers enabled
     p_sub_val._p.get_or_add_pPr().append(parse_xml(s0_xml))
 
     # ---------------------------------------------------------
-    # SECTION 1: PRELIMINARY PAGES (Page Numbers, 100% English)
+    # SECTION 1: PRELIMINARY PAGES (Lower Roman Numerals i, ii, iii...)
     # ---------------------------------------------------------
-    # Abstract (Strict ~3/4 Page, ~220 words)
+    # Abstract (Strict ~3/4 Page, ~200-220 words)
     add_h1(doc, "Abstract")
-    add_paragraph_styled(doc, "[Insert executive abstract summarizing the training organization, core responsibilities, and capstone project here. Guideline: Exactly ~3/4 page in length, ~200-220 words across 2 structured paragraphs. Strictly 100% English with no Arabic characters or phrases.]")
+    add_paragraph_styled(doc, "[Insert executive abstract summarizing the training organization, core responsibilities, and capstone project here. Guideline: Exactly ~3/4 page in length, ~200-220 words across 2 structured paragraphs. Strictly 100% English with no Arabic characters or phrases. Do NOT include generic graduation requirement clauses.]")
     doc.add_page_break()
 
-    # Acknowledgments (Strict <= 1/2 Page, ~110 words)
+    # Acknowledgments (Strict <= 1/2 Page, ~100-120 words)
     add_h1(doc, "Acknowledgments")
     add_paragraph_styled(doc, "[Insert acknowledgments expressing gratitude to Almighty Allah, academic advisor (Dr. [Advisor Name]), hospital/organization leadership, faculty, and family here. Guideline: Half a page or less (<= 1/2 page, ~100-120 words). Strictly 100% English.]")
     doc.add_page_break()
@@ -107,10 +106,18 @@ def make_clean_template():
     doc.add_page_break()
 
     add_h1(doc, "Introduction")
-    add_paragraph_styled(doc, "[Insert preface/introduction explaining the cooperative training curriculum, academic context, and document structure.]")
+    p_intro_last = add_paragraph_styled(doc, "[Insert preface/introduction explaining the cooperative training curriculum, academic context, and document structure.]")
+
+    # End Section 1: lowerRoman page numbers (i, ii, iii...)
+    s1_prelim_xml = s0_xml.replace('<w:headerReference', '<w:pgNumType w:fmt="lowerRoman" w:start="1"/><w:headerReference') if '<w:headerReference' in s0_xml else s0_xml
+    s1_prelim_elem = parse_xml(s1_prelim_xml)
+    p_intro_last._p.get_or_add_pPr().append(s1_prelim_elem)
     doc.add_page_break()
 
-    # Chapter I
+    # ---------------------------------------------------------
+    # SECTION 2: MAIN CHAPTERS (Arabic Numerals 1, 2, 3...)
+    # ---------------------------------------------------------
+    # Chapter I: Introduction & Training Organization
     add_h1(doc, "CHAPTER I:  INTRODUCTION")
     add_h2(doc, "1.1 Introduction")
     add_paragraph_styled(doc, "[Insert introductory context on the industry/sector and public health/regional transformation.]")
@@ -131,44 +138,45 @@ def make_clean_template():
     add_paragraph_styled(doc, "[Insert institutional strategic objectives.]")
     doc.add_page_break()
 
-    # Chapter II
+    # Chapter II: Tasks & Experiences
     add_h1(doc, "CHAPTER II:  TASKS & EXPERIENCES")
     add_h2(doc, "2.1 Requirements Analysis")
     add_h3(doc, "2.1.1 Technical support")
     add_paragraph_styled(doc, "[Detail workstation maintenance, operating system deployment, hardware troubleshooting, and printer support. Note: Do NOT mention months or duration.]")
-    add_h3(doc, "2.1.2 Apps and system")
-    add_paragraph_styled(doc, "[Detail enterprise software deployment, security scans, data tracking in Excel, and user instructional manuals.]")
-    add_h3(doc, "2.1.3 Networks & Communications")
+    add_h3(doc, "2.1.2 Networks & Communications")
     add_paragraph_styled(doc, "[Detail LAN auditing, IP address surveys, patch cabling, switch ports, and network printer sharing.]")
     add_h2(doc, "2.2 Experiences & Problems")
     add_h3(doc, "2.2.1 Experiences")
     add_paragraph_styled(doc, "[Detail rewarding milestones, technical challenges resolved, professional soft skills, and self-directed learning.]")
     doc.add_page_break()
 
-    # Chapter III
+    # Chapter III: Coop Project
     add_h1(doc, "CHAPTER III:  COOP PROJECT")
     add_h2(doc, "3.1 Problem Statement")
-    add_paragraph_styled(doc, "[Define the domain challenges, inefficiencies, and motivation behind the software project.]")
+    add_paragraph_styled(doc, "[Define the domain challenges, clinical workflow bottlenecks, and motivation behind the software project.]")
     add_h2(doc, "3.2 Project Overview")
     add_paragraph_styled(doc, "[Provide a high-level architectural and functional summary of the developed application.]")
     add_h2(doc, "3.3 Project Objectives")
     add_paragraph_styled(doc, "[Articulate measurable project objectives alongside technical implementations.]")
     add_h2(doc, "3.4 Project Phases and Problem Solution")
-    add_paragraph_styled(doc, "[Describe the systematic software engineering lifecycle phases from requirements to deployment.]")
+    add_h3(doc, "3.4.1 Agile Software Development Methodology")
+    add_paragraph_styled(doc, "[Explain the Agile incremental development lifecycle across its 6 recurring phases: Requirements, Design, Development, Testing, Deployment, and Review. Embed the Agile cycle diagram below and refer to it generically in prose.]")
+    add_h3(doc, "3.4.2 Project Development Phases")
+    add_paragraph_styled(doc, "[Describe the systematic software engineering milestones executed across sprints.]")
     add_h2(doc, "3.5 Project Development Process")
-    add_paragraph_styled(doc, "[Detail the technology stack, development tools, stakeholder roles, functional requirements, and non-functional guarantees.]")
+    add_paragraph_styled(doc, "[Detail the technology stack (e.g. PHP 8.3, MySQL, Bootstrap 5), development tools, stakeholder roles, functional requirements, and non-functional guarantees.]")
     add_h2(doc, "3.6 System Design Diagrams")
-    add_paragraph_styled(doc, "[Embed and analyze Use Case diagrams, Entity-Relationship diagrams, Sequence diagrams, and Activity flowcharts. Note: Refer to diagrams generically (e.g. 'As modeled in the Use Case diagram...', 'The sequence diagram demonstrates...') rather than static numbers.]")
+    add_paragraph_styled(doc, "[Embed and analyze Use Case diagrams, Entity-Relationship diagrams, Sequence diagrams, and Activity flowcharts. Note: For the database, clarify the total normalized physical tables (e.g. 14 tables in 3NF) while explaining the primary core entities highlighted in the Chen ERD and describing auxiliary tables. Refer to diagrams and tables generically (e.g. 'As shown in the table below...', 'The entity relationship diagram demonstrates...') without hardcoded static numbers.]")
     add_h2(doc, "3.7 System Interfaces Overview")
     add_paragraph_styled(doc, "[Present role-specific user interface screenshots, accompanied by at least two lines of functional explanation per image. Rule: Refer to screenshots generically without hardcoding static figure numbers in prose.]")
     add_h2(doc, "3.8 Testing")
-    add_paragraph_styled(doc, "[Detail unit testing, integration testing, security vulnerability auditing, and user acceptance scenarios.]")
+    add_paragraph_styled(doc, "[Detail unit testing, integration testing, security vulnerability auditing following OWASP guidelines, and user acceptance scenarios. Keep performance and security metrics general without mentioning specific milliseconds or vulnerability counts.]")
     doc.add_page_break()
 
-    # Chapter IV
+    # Chapter IV: Conclusion & Recommendations
     add_h1(doc, "CHAPTER IV:  CONCLUSION & RECOMMENDATIONS")
     add_h2(doc, "Conclusion")
-    add_paragraph_styled(doc, "[Synthesize key takeaways, professional growth, and capstone project achievements.]")
+    add_paragraph_styled(doc, "[Synthesize key takeaways, professional growth, and capstone project achievements. Note: Future Work is excluded.]")
     add_h2(doc, "Recommendations")
     add_paragraph_styled(doc, "[Provide actionable recommendations for the training organization and academic institution.]")
     doc.add_page_break()
@@ -176,6 +184,16 @@ def make_clean_template():
     # References
     add_h1(doc, "References")
     add_paragraph_styled(doc, "[Insert full bibliographic references in APA format with functional URLs. Strictly 100% English.]")
+
+    # Configure Section 2: decimal page numbers starting at 1
+    body_sectPr = doc._body._element.xpath('w:sectPr')
+    if body_sectPr:
+        pg_num = body_sectPr[0].find(docx.oxml.ns.qn('w:pgNumType'))
+        if pg_num is not None:
+            pg_num.set(docx.oxml.ns.qn('w:fmt'), 'decimal')
+            pg_num.set(docx.oxml.ns.qn('w:start'), '1')
+        else:
+            body_sectPr[0].append(parse_xml('<w:pgNumType xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" w:fmt="decimal" w:start="1"/>'))
 
     clean_docx = os.path.join(REPO_DIR, 'template_term5.docx')
     doc.save(clean_docx)

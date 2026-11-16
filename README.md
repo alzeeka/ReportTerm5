@@ -9,12 +9,14 @@
 ```
 ReportTerm5/
 ├── README.md                          ← هذا الملف (المرجع المعياري الشامل والبرومبت الذهبي)
+├── MASTER_PROMPT.md                   ← البرومبت الشامل الجاهز للنسخ المباشر لنماذج الذكاء الاصطناعي
 ├── template.docx                      ← القالب الأساسي بصيغة DOCX
 ├── template_term5.docx                ← قالب Term 5 الجديد الجاهز للاستخدام
 ├── report_builder_core.py             ← المحرك البرمجي لدوال التنسيق، الجداول، والصور، وحقول XML
 ├── generate_report.py                 ← سكربت التوليد الآلي لتقرير مشروع رعاية (Riaya)
 ├── make_clean_template.py             ← سكربت تفريغ القالب وتحديث مجلد Tamplate/
 ├── update_word_fields.py              ← سكربت تحديث حقول Word وتوليد الفهارس وأرقام الصفحات آلياً
+├── agile_methodology.png              ← المخطط الدائري المعتمد لمنهجية أجايل (6 مراحل تكرارية)
 ├── Tamplate/                          ← مجلد القالب المفكوك (XML) المعتمد الجديد
 │   ├── [Content_Types].xml
 │   ├── _rels/
@@ -27,7 +29,7 @@ ReportTerm5/
 │       ├── header1.xml                ← رأس الصفحة (فارغ)
 │       └── footer1.xml                ← تذييل الصفحة (رقم الصفحة فقط)
 └── FinalReportsDOCX/                  ← مجلد التقارير النهائية المنتجة
-    └── Riaya_Final_Report.docx        ← ✅ التقرير النهائي الشامل لمشروع رعاية (56 صفحة)
+    └── Riaya_Final_Report.docx        ← ✅ التقرير النهائي الشامل لمشروع رعاية (53 صفحة)
 ```
 
 ---
@@ -37,16 +39,20 @@ ReportTerm5/
 | العنصر | القالب القديم (ReportLMM) | القالب الجديد المعتمد (ReportTerm5) |
 |---|---|---|
 | **صفحة الغلاف** | الغلاف التقليدي لتقرير Lamia | **غلاف Term 5 الجديد:** شعار جامعة حائل في المنتصف، اسم الجامعة، الكلية، القسم، اسم جهة التدريب ببنط 26pt، المشرفة الأكاديمية ببنط 20pt، بيانات الطالبة والرقم الجامعي. |
-| **هيكل الفصول** | فصول التدريب التعاوني القديمة | **فهرس الفصول الأربعة المعتمد:**<br>• Chapter I: INTRODUCTION (الحديث عن جهة التدريب حصراً)<br>• Chapter II: TASKS & EXPERIENCES (دمج المهام دون ذكر الأشهر)<br>• Chapter III: COOP PROJECT (المشروع التقني مع المعايير الدولية)<br>• Chapter IV: CONCLUSION (الخاتمة والتوصيات)<br>• References (المراجع) |
+| **هيكل الفصول** | فصول التدريب التعاوني القديمة | **فهرس الفصول الأربعة المعتمد:**<br>• Chapter I: INTRODUCTION (الحديث عن جهة التدريب حصراً)<br>• Chapter II: TASKS & EXPERIENCES (دمج المهام دون ذكر الأشهر)<br>• Chapter III: COOP PROJECT (المشروع التقني مع المعايير الدولية ومنهجية أجايل)<br>• Chapter IV: CONCLUSION (الخاتمة والتوصيات)<br>• References (المراجع) |
+| **ترقيم الصفحات** | ترقيم عربي مستمر لكافة الصفحات | **معمارية الأقسام الثلاثة (3-Section Architecture):**<br>• الغلاف (Section 0): معزول وبدون ترقيم.<br>• الصفحات التمهيدية (Section 1): أرقام لاتينية صغيرة (`i, ii, iii...`).<br>• فصول التقرير (Section 2): أرقام عربية قياسية (`1, 2, 3...`) تبدأ من 1. |
 | **الملحق (Appendix)** | كان موجوداً ويحتوي على قصاصات كود | **تم حذفه بالكامل (Deleted)** وفق التعليمات الصريحة. |
 | **محتوى الفصل الأول** | كان يدمج دور الطالبة بالجهة | **يتحدث عن جهة التدريب حصراً** (نبذة، تاريخ، أقسام، رؤية، رسالة، أهداف) ولا يتطرق لدور الطالبة الشخصي. |
 | **صورة جهة التدريب** | تدرج في أماكن متفرقة | **إلزامية في القسم 1.2.1 مباشرة أسفل الفقرة الافتتاحية** (Figure 1.1). |
 | **التقارير الشهرية** | كانت بعض التقارير تذكر التواريخ | **ممنوع تماماً ذكر الأشهر أو المدد الزمنية** في السرد. |
-| **المعايير الرسمية** | تركيز عام على البرمجة | **التركيز على المعايير الصحية العالمية:** LOINC، ICD-10، حدود Mayo Clinic و ARUP Laboratories، ومحرك الذكاء الاصطناعي OpenRouter. |
-| **جدول المحتويات (TOC)** | كان يتكرر ويظهر أحياناً قبل الغلاف بسبب عناصر `<w:sdt>` عالقة | **منع التكرار نهائياً وتفريغ الـ Body بالكامل:** حذف كافة عناصر الـ Body ما عدا `sectPr`، وفصل Section 0 (الغلاف بدون ترويسة أو ترقيم) عن Section 1 (يبدأ من صفحة 2 بالملخص ثم الشكر ثم الفهرس الموحد). |
-| **حجم المستخلص (Abstract)** | كان يمتد لصفحتين أحياناً | **محدد بـ 3/4 صفحة حصراً** (~200 إلى 220 كلمة في فقرتين مكثفتين). |
-| **حجم الشكر (Acknowledgments)** | كان يمتد لأكثر من صفحة | **محدد بنصف صفحة أو أقل** (<= 1/2 صفحة، ~100 إلى 120 كلمة). |
-| **لغة التقرير** | كانت تتداخل فيها بعض العبارات العربية في الأقواس | **إنجليزية خالصة 100% (Strict English-Only):** يمنع منعاً باتاً وجود أي حروف أو نصوص عربية داخل نص التقرير أو العناوين أو المراجع. |
+| **فحص الـ Endpoints** | كان يذكر فحص نقاط API | **تم حذف فحص Endpoints وقسم 2.1.2** لكونها غير متناسبة مع نطاق تدريب الطلاب بالمستشفيات. |
+| **منع التحاليل المكررة** | كان محدد بـ 48 ساعة | **معدل إلى منع التحاليل المكررة لمدة 30 يوماً أو حسب إعدادات المنصة** لواقعيته الإكلينيكية. |
+| **المعايير الرسمية** | تركيز عام على البرمجة | **التركيز على المعايير الصحية العالمية:** LOINC، ICD-10، حدود المختبرات المعتمدة، محرك الذكاء الاصطناعي OpenRouter، ومنهجية Agile Development. |
+| **جدول المحتويات (TOC)** | كان يتكرر ويظهر أحياناً قبل الغلاف بسبب عناصر `<w:sdt>` عالقة | **منع التكرار نهائياً وتفريغ الـ Body بالكامل:** تفريغ الـ Body وعزل Section 0 عن Section 1. |
+| **حجم المستخلص (Abstract)** | كان يمتد لصفحتين أحياناً | **محدد بـ 3/4 صفحة حصراً** (~200 إلى 220 كلمة في فقرتين مكثفتين دون عبارات متطلبات التخرج العامة). |
+| **حجم الشكر (Acknowledgments)** | كان يمتد لأكثر من صفحة | **محدد بنصف صفحة أو أقل** (<= 1/2 صفحة، ~100 إلى 120 كلمة مع لقب Dr.). |
+| **لغة التقرير** | كانت تتداخل فيها بعض العبارات العربية في الأقواس | **إنجليزية خالصة 100% (Strict English-Only):** يمنع وجود أي حروف أو نصوص عربية داخل متن التقرير. |
+| **الإشارة للجداول والصور** | أرقام ثابتة في الشرح تسبب تضارباً | **إشارة وصفية عامة في الشرح** (مثل: in the table below, as shown in the diagram) لتفادي التضارب مع حقول SEQ. |
 
 ---
 
@@ -100,15 +106,11 @@ ReportTerm5/
   </w:r>
   <w:r>
     <w:rPr><w:i/><w:sz w:val="22"/></w:rPr>
-    <w:instrText xml:space="preserve"> SEQ Figure \r 1 \* ARABIC </w:instrText>
+    <w:instrText xml:space="preserve"> SEQ Figure \s 1 </w:instrText>
   </w:r>
   <w:r>
     <w:rPr><w:i/><w:sz w:val="22"/></w:rPr>
     <w:fldChar w:fldCharType="separate"/>
-  </w:r>
-  <w:r>
-    <w:rPr><w:i/><w:noProof/><w:sz w:val="22"/></w:rPr>
-    <w:t>1</w:t>
   </w:r>
   <w:r>
     <w:rPr><w:i/><w:sz w:val="22"/></w:rPr>
@@ -116,145 +118,82 @@ ReportTerm5/
   </w:r>
   <w:r>
     <w:rPr><w:i/><w:sz w:val="22"/></w:rPr>
-    <w:t xml:space="preserve">: Caption text here</w:t>
+    <w:t>: Caption Text</w:t>
   </w:r>
 </w:p>
 ```
 
-### 4.2 حقول الجداول والفهارس
-- **جدول المحتويات الرئيسي:** `{ TOC \h \o "1-3" }`
-- **قائمة الأشكال (Table of Figures):** `{ TOC \h \z \c "Figure" }`
-- **قائمة الجداول (Table of Tables):** `{ TOC \h \z \c "Table" }`
+### 4.2 بنية الأقسام وترقيم الصفحات اللاتيني والعربي (3-Section Setup)
+
+1. **Section 0 (Cover Page):**
+   ينتهي بفاصل مقطعي مرتبط بخصائص القسم 0 بدون أرقام صفحات:
+   ```python
+   p_cover_last._p.get_or_add_pPr().append(parse_xml(s0_xml))
+   ```
+2. **Section 1 (Preliminary Pages: Abstract -> Introduction):**
+   ينتهي بفاصل مقطعي يحمل خاصية الترقيم اللاتيني الصغير:
+   ```xml
+   <w:pgNumType w:fmt="lowerRoman" w:start="1"/>
+   ```
+3. **Section 2 (Main Chapters: Chapter I -> References):**
+   يحمل جسم المستند الرئيسي خاصية إعادة تعيين الترقيم العربي من 1:
+   ```xml
+   <w:pgNumType w:fmt="decimal" w:start="1"/>
+   ```
 
 ---
 
-## 5. الهيكل الإلزامي الكامل لتقرير Term 5
+## 5. هيكل الفصول المعتمد (The Approved 4-Chapter Hierarchy)
 
 ```
-1. الغلاف (Cover Page):
-   ├── شعار جامعة حائل (في المنتصف)
-   ├── University Of Hail (16pt bold)
-   ├── College of Computer Science and Engineering (16pt bold)
-   ├── Department of Computer Science (16pt bold)
-   ├── Training Organization Name : (24pt bold)
-   ├── [اسم جهة التدريب - مثل Al-Hait General Hospital] (26pt bold)
-   ├── Under Supervision of Academic Advisor: (18pt bold)
-   ├── [اسم المشرفة الأكاديمية مسبوقاً بـ Dr. - مثل Dr. Al-Bandari Al-Otaibi] (20pt bold)
-   └── Submitted by: [اسم الطالبة] | [الرقم الجامعي] (18pt bold)
+1. Cover Page                                 [Section 0: بدون ترويسة، بدون تذييل، بدون ترقيم]
+2. Abstract                                   [Section 1: يبدأ الترقيم اللاتيني i، 3/4 صفحة]
+3. Acknowledgments                            [نصف صفحة أو أقل، Dr. Academic Advisor]
+4. Table of Contents                          [حقل وورد تلقائي وحيد: TOC \h \o "1-3"]
+5. Table of Figures                           [حقل وورد تلقائي: TOC \h \z \c "Figure"]
+6. Table of Tables                            [حقل وورد تلقائي: TOC \h \z \c "Table"]
+7. Introduction                               [نهاية Section 1 بفاصل مقطعي]
 
-2. Abstract                                  [Heading 1]
-3. Acknowledgments                           [Heading 1]
-4. Table of Contents                         [Heading 1] ← حقل TOC
-5. Table of Figures                          [Heading 1] ← حقل Figures TOC
-6. Table of Tables                           [Heading 1] ← حقل Tables TOC
-7. Introduction (المقدمة التمهيدية)          [Heading 1]
+8. CHAPTER I: INTRODUCTION                    [Section 2: يبدأ الترقيم العربي 1]
+   1.1 Introduction
+   1.2 Training Organization
+       Relevant Work
+       1.2.1 What is Training Organization.?  [أسفله مباشرة: Figure 1.1]
+       1.2.2 History of Training Organization
+       1.2.3 Overview of Training Organization
+             Vision
+             The Message
+             The Objectives
 
-8. CHAPTER I:  INTRODUCTION                  [Heading 1]
-   ├── 1.1 Introduction                      [Heading 2]
-   └── 1.2 Training Organization             [Heading 2]
-       ├── Relevant Work                     [Heading 3]
-       ├── 1.2.1 What is Training Organization.? [Heading 3]
-       │   ├── فقرة افتتاحية لتقديم الجهة
-       │   ├── صورة المبنى الرئيسي (Figure 1.1) ← أسفل الفقرة الافتتاحية مباشرة
-       │   └── فقرات تفصيلية عن الموقع والسعة
-       ├── 1.2.2 History of Training Organization [Heading 3]
-       ├── 1.2.3 Overview of Training Organization [Heading 3]
-       │   └── خارطة المنظومة الصحية (Figure 1.2)
-       ├── Vision                            [Heading 3]
-       ├── The Message                       [Heading 3]
-       └── The Objectives                    [Heading 3]
+9. CHAPTER II: TASKS & EXPERIENCES
+   2.1 Requirements Analysis
+       2.1.1 Technical support
+       2.1.2 Networks & Communications
+   2.2 Experiences & Problems
+       2.2.1 Experiences                      [جدول المهارات التقنية + جدول المهارات الشخصية]
 
-9. CHAPTER II:  TASKS & EXPERIENCES          [Heading 1]
-   ├── 2.1 Requirements Analysis             [Heading 2]
-   │   ├── 2.1.1 Technical support           [Heading 3]
-   │   ├── 2.1.2 Apps and system             [Heading 3]
-   │   └── 2.1.3 Networks & Communications   [Heading 3]
-   └── 2.2 Experiences & Problems            [Heading 2]
-       └── 2.2.1 Experiences                 [Heading 3]
-           ├── Table 2.1: Technical Skills Acquired
-           └── Table 2.2: Soft & Professional Skills Acquired
+10. CHAPTER III: COOP PROJECT
+    3.1 Problem Statement
+    3.2 Project Overview
+    3.3 Project Objectives
+    3.4 Project Phases and Problem Solution
+        3.4.1 Agile Software Development Methodology [مخطط الأجايل الدائري agile_methodology.png]
+        3.4.2 Project Development Phases
+    3.5 Project Development Process           [PHP 8.3, MySQL, Bootstrap 5, منع التكرار 30 يوماً]
+    3.6 System Design Diagrams                [Use Case, Chen ERD مع 14 جدولاً، Sequence, Activity]
+    3.7 System Interfaces Overview            [لقطات الشاشة مع شرح وظيفي لا يقل عن سطرين لكل واجهة]
+    3.8 Testing                               [Unit, Integration, OWASP Security Auditing]
 
-10. CHAPTER III:  COOP PROJECT               [Heading 1]
-    ├── 3.1 Problem Statement                [Heading 2]
-    ├── 3.2 Project Overview                 [Heading 2]
-    ├── 3.3 Project Objectives               [Heading 2] ← Table 3.1
-    ├── 3.4 Project Phases and Problem Solution [Heading 2]
-    ├── 3.5 Project Development Process      [Heading 2] ← Tables 3.2, 3.3
-    ├── 3.6 System Design Diagrams           [Heading 2]
-    │   ├── 3.6.1 Use Case Diagram           [Heading 3] ← Figure 3.1
-    │   ├── 3.6.2 Entity-Relationship Diagram [Heading 3] ← Figure 3.2
-    │   ├── 3.6.3 Sequence Diagrams          [Heading 3] ← Figures 3.3, 3.4
-    │   └── 3.6.4 Clinical Process Flowcharts [Heading 3] ← Figures 3.5, 3.6
-    ├── 3.7 System Interfaces Overview       [Heading 2]
-    │   ├── 3.7.1 Authentication & Security Interfaces [Heading 3] ← Figures 3.7, 3.8
-    │   ├── 3.7.2 Administrator Portal       [Heading 3] ← Figures 3.9–3.16
-    │   ├── 3.7.3 Receptionist Portal        [Heading 3] ← Figures 3.17, 3.18
-    │   ├── 3.7.4 Clinical Physician Portal  [Heading 3] ← Figures 3.19–3.23
-    │   ├── 3.7.5 Laboratory Information System [Heading 3] ← Figures 3.24, 3.25
-    │   └── 3.7.6 Patient Health Portal      [Heading 3] ← Figures 3.26–3.30
-    └── 3.8 Testing and Quality Assurance    [Heading 2]
+11. CHAPTER IV: CONCLUSION & RECOMMENDATIONS
+    Conclusion                                [ملخص الإنجازات والدروس المستفادة]
+    Recommendations                           [توصيات للجهة والكلية والطلاب]
 
-11. CHAPTER IV:  CONCLUSION                  [Heading 1]
-    ├── Conclusion                           [Heading 2]
-    └── Recommendations                      [Heading 2]
-
-12. References                               [Heading 1]
-    (APA Style مع روابط تشعبية فعالة)
+12. References                                [APA Style مع روابط تشعبية فعالة]
 ```
 
 ---
 
-## 6. البرومبت الشامل المعتمد (Master System Prompt)
-
-```
-أنت خبير أكاديمي وهندسي رفيع المستوى في إعداد تقارير التدريب التعاوني (COOP Final Reports) بصيغة DOCX لطلاب جامعة حائل (كلية علوم وهندسة الحاسب الآلي).
-
-المرجع المعياري الحصري المعتمد: مستودع ReportTerm5 (القالب المحدث Term 5).
-
-القواعد الحاكمة والإلزامية:
-1. إعدادات المستند ولغته:
-   - اللغة: الإنجليزية الأكاديمية الاحترافية بالكامل 100% (Strict English-Only). يمنع منعاً باتاً إدراج أي حروف أو كلمات عربية مثل أسماء الجهات أو المنصات بين قوسين.
-   - الخط: Times New Roman، النص الأساسي 12pt (sz=24)، تباعد الأسطر 1.5 سطر (line=360)، تباعد بعد الفقرة 10pt (200 twips).
-   - العناوين: H1 (16pt bold #1B3A5C), H2 (14pt bold #1B3A5C), H3 (13pt bold #2E5D8A).
-   - حجم الصفحة: A4 Portrait، الهوامش 1 inch من كافة الجهات.
-   - عرض الصور: 6.27 inch في المنتصف، مع الحفاظ على النسبة الأبعاد.
-   - منع تكرار جدول المحتويات: يجب تفريغ جسم المستند (Body) بالكامل من كافة عناصر `<w:p>`, `<w:tbl>`, `<w:sdt>` وحصر البداية بالغلاف في Section 0، ثم إضافة Section 1 من صفحة 2.
-
-2. صفحة الغلاف والصفحات التمهيدية (Cover & Front Matter):
-   - صفحة الغلاف (Section 0): معزولة تماماً بدون رأس صفحة (Header) وبدون تذييل (Footer) وبدون ترقيم صفحات.
-   - المستخلص (Abstract): يضبط طوله ليكون **3/4 صفحة حصراً** (~200 إلى 220 كلمة، فقرتين متكاملتين).
-   - الشكر والتقدير (Acknowledgments): يضبط طوله ليكون **نصف صفحة أو أقل** (~100 إلى 120 كلمة).
-   - جدول المحتويات (TOC): جدول محتويات موحد ووحيد يبدأ بعد صفحة الشكر في Section 1، ولا يظهر أي جدول قبل الغلاف.
-   - شعار جامعة حائل في المنتصف بارتفاع 1.8 inch.
-   - University Of Hail (16pt bold)
-   - College of Computer Science and Engineering (16pt bold)
-   - Department of [Department Name] (16pt bold)
-   - Training Organization Name : (24pt bold)
-   - [اسم جهة التدريب] (26pt bold)
-   - Under Supervision of Academic Advisor: (18pt bold)
-   - [اسم المشرفة/المشرف مسبوقاً باللقب الأكاديمي Dr. - مثل Dr. Al-Bandari Al-Otaibi] (20pt bold)
-   - Submitted by: [اسم الطالب/الطالبة] | [الرقم الجامعي] (18pt bold)
-
-3. فصول التقرير الأربعة الإلزامية:
-   - Chapter I: يركز بالكامل وحصرياً على جهة التدريب (تاريخها، مبناها، أقسامها، ورؤيتها ورسالتها وأهدافها) ولا يذكر دور الطالبة الشخصي. توضع صورة المبنى Figure 1.1 أسفل الفقرة الافتتاحية للقسم 1.2.1 مباشرة.
-   - Chapter II: يدمج المهام والخبرات والمهارات المكتسبة في تدفق سردي متماسك دون أي ذكر للأشهر أو أرقام التقارير الشهرية أو الفترات الزمنية. يتضمن جدولين مخصصين للمهارات التقنية والشخصية.
-   - Chapter III: يعرض المشروع البرمجي التطبيقي المتكامل (المشكلة، الأهداف، مراحل الحل، معمارية النظام، مخططات UML والـ ERD، ولقطات الشاشة للواجهات). يجب أن يتبع كل صورة واجهة شرح وظيفي من سطرين على الأقل. مع التركيز على المعايير الدولية الرسمية (LOINC, ICD-10, AI OpenRouter, Mayo Clinic Reference Ranges).
-   - Chapter IV: الخاتمة والتوصيات الاستراتيجية الموجهة لجهة التدريب والكلية والطلاب.
-   - References: قائمة مراجع أكاديمية بنمط APA مدعومة بروابط نشطة.
-   - الملحق (Appendix): محذوف نهائياً.
-
-4. التسميات والحقول وقاعدة الإشارة للصور في الشرح:
-   - التسميات أسفل الصور وأعلى الجداول.
-   - الصيغة البرمجية للتسميات: Figure {chapter}. + SEQ Figure + : Caption.
-   - جميع عناصر fldChar و instrText يجب أن تقع داخل عناصر <w:r> حصراً وبلا أي استثناء.
-   - **قاعدة الإشارة للصور في النص السردي (Strict Generic Reference Rule):** يمنع منعاً باتاً كتابة أرقام الأشكال الثابتة (مثل Figure 3.2 أو Figure 1.1) داخل النص السردي للشرح؛ بل يجب استخدام تعابير وصفية عامة مثل: `The figure illustrates...` أو `As depicted in the diagram...` أو `The sequence diagram demonstrates...` أو `As shown in the interface screenshot...`. السبب: التسميات التوضيحية (Captions) تعتمد حقول SEQ وتتغير أرقامها تلقائياً عند إضافة أو حذف أي صورة، في حين أن النص الثابت لا يتغير تلقائياً، لذا يجب تجنب ذكر الأرقام في النص لضمان عدم حدوث تضارب.
-   - **حذف الأعمال المستقبلية (Future Work):** تم حذف قسم Future Work نهائياً بناءً على الاعتماد الأكاديمي.
-   - جدول المحتويات وقائمة الأشكال والجداول تعتمد حقول وورد الديناميكية وتُحدّث تلقائياً عبر settings.xml (<w:updateFields w:val="true"/>) وسكربت update_word_fields.py.
-```
-
----
-
-## 7. فحص الامتثال البرمجي وصحة الحقول (Validation Protocol)
+## 6. فحص الامتثال البرمجي وصحة الحقول (Validation Protocol)
 
 للتحقق من سلامة أي تقرير مُنتج وخلوه من أخطاء حقول وورد:
 
@@ -278,10 +217,11 @@ print(f'Broken fldChar: {broken}')
 
 ---
 
-## 8. سجل التغييرات (Changelog)
+## 7. سجل التغييرات (Changelog)
 
 | التاريخ | الإصدار | التعديلات المنفذة | السبب |
 |---|---|---|---|
+| **2026-11-16** | **2.3.0 (3-Section Roman & Agile Standard)** | • تفعيل معمارية الأقسام الثلاثة: الغلاف (Section 0) غير مرقم، الصفحات التمهيدية (Section 1) بترقيم لاتيني صغير (`i, ii, iii...`)، والفصول الرئيسية (Section 2) بترقيم عربي (`1, 2, 3...`) يبدأ من 1.<br>• حذف عبارة متطلبات التخرج العامة من المستخلص.<br>• تعديل فترة منع إجراء التحاليل المكررة إلى "30 يوماً أو حسب إعدادات المنصة" عبر التقرير بالكامل.<br>• ترقية بيئة العمل المعتمدة إلى PHP 8.3.<br>• حذف قسم 2.1.2 Apps and system واستبعاد فحص Endpoint APIs لكونها غير متناسبة مع نطاق تدريب الطلاب بالمستشفيات، وتعديل ترقيم شبكات الاتصال إلى 2.1.2.<br>• منع كتابة أرقام ثابتة للجداول في الشرح واعتماد الإشارة الوصفية العامة حصراً.<br>• تعميم مقاييس الأداء والأمان دون ذكر أرقام ميلي ثانية ثابتة أو تحديد عدد الثغرات.<br>• توضيح معمارية قاعدة البيانات الفعلية (14 جدولاً معيارياً 3NF) مع إبراز الكيانات الأساسية في مخطط Chen ERD.<br>• إضافة القسم 3.4.1 لمنهجية أجايل (Agile Development) مع إدراج المخطط الدائري ذي المراحل الست (`agile_methodology.png`). | ملاحظات المستخدم وضبط القالب النهائي لكافة المشاريع في المستودع. |
 | **2026-11-16** | **2.2.0 (Advisor & Image Rules)** | • إضافة اللقب الأكاديمي Dr. أمام اسم المشرفة الأكاديمية (`Dr. Al-Bandari Al-Otaibi`).<br>• حذف قسم الأعمال المستقبلية (3.9 Future Work) نهائياً من التقرير والقالب.<br>• منع كتابة أرقام الأشكال الثابتة (Figure X.X) في شروحات النصوص واعتماد الإشارة الوصفية العامة لتفادي التضارب عند تحديث حقول SEQ.<br>• تحديث القالب وسكربتات التوليد وإعادة توليد النسخ المعتمدة بنجاح. | ملاحظات المستخدم وضبط القالب للمشاريع المستقبلية. |
 | **2026-11-16** | **2.1.0 (Fixes & Standard)** | • معالجة مشكلة تكرار جدول المحتويات نهائياً بتفريغ عناصر الـ Body من قوالب SDT العالقة.<br>• عزل صفحة الغلاف كـ Section 0 مستقل تماماً بدون ترقيم وبدون ترويسة.<br>• تقليص المستخلص (Abstract) ليكون 3/4 صفحة بدقة (~220 كلمة).<br>• تقليص الشكر والتقدير (Acknowledgments) ليكون نصف صفحة أو أقل (~115 كلمة).<br>• إزالة كافة الكلمات والنصوص العربية لتكون وثيقة التقرير بالإنجليزية 100% (Strict English-Only).<br>• تحديث سكربت تحديث الحقول update_word_fields.py لتفادي الحوارات المعلقة. | ملاحظات المستخدم وضبط القالب المعياري لكافة المشاريع المستقبلية. |
-| **2026-11-16** | **2.0.0 (Term 5)** | • إنشاء مستودع `ReportTerm5`.<br>• اعتماد صفحة الغلاف الجديدة مع شعار جامعة حائل والخطوط المعتمدة.<br>• اعتماد عناوين الشباتر الأربعة الرسمية وحذف الـ Appendix نهائياً.<br>• حصر الفصل الأول في جهة التدريب وموقعها وتاريخها ورؤيتها دون التطرق لدور الطالبة.<br>• دمج التقارير الشهرية في الفصل الثاني دون ذكر للأشهر أو المدد الزمنية.<br>• إبراز المعايير الرسمية في مشروع رعاية: LOINC و ICD-10 و OpenRouter AI ومصادر الحدود الحرجة.<br>• توفير سكربت بايثون لتوليد التقرير كاملاً بالإنجليزية في 56 صفحة مع تحديث حقول الوورد والفهارس.<br>• توثيق البرومبت الشامل الجديد في README.md. | طلب المستخدم ومطابقة قالب Term 5 الجديد لجامعة حائل. |
+| **2026-11-16** | **2.0.0 (Term 5)** | • إنشاء مستودع `ReportTerm5`.<br>• اعتماد صفحة الغلاف الجديدة مع شعار جامعة حائل والخطوط المعتمدة.<br>• اعتماد عناوين الشباتر الأربعة الرسمية وحذف الـ Appendix نهائياً.<br>• حصر الفصل الأول في جهة التدريب وموقعها وتاريخها ورؤيتها دون التطرق لدور الطالبة.<br>• دمج التقارير الشهرية في الفصل الثاني دون ذكر للأشهر أو المدد الزمنية.<br>• إبراز المعايير الرسمية في مشروع رعاية: LOINC و ICD-10 و OpenRouter AI ومصادر الحدود الحرجة.<br>• توفير سكربت بايثون لتوليد التقرير كاملاً بالإنجليزية مع تحديث حقول الوورد والفهارس.<br>• توثيق البرومبت الشامل الجديد في README.md. | طلب المستخدم ومطابقة قالب Term 5 الجديد لجامعة حائل. |

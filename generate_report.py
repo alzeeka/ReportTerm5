@@ -34,16 +34,31 @@ def build_report():
     # Load golden template
     doc = docx.Document(TEMPLATE_DOCX)
 
-    # Capture Section 0 (Cover Page) XML properties
+    # Capture Section 0 (Cover Page) and Section 1 base XML properties
     s0_xml = doc.sections[0]._sectPr.xml
+    s1_xml = doc.sections[1]._sectPr.xml
 
     # Completely wipe ALL body elements (paragraphs, tables, orphan SDT / TOC)
-    # preserving ONLY the final sectPr for Section 1
+    # preserving ONLY the final sectPr for Section 2 (Main Report)
     body = doc._body._element
     for child in list(body):
         if child.tag.endswith('sectPr'):
             continue
         body.remove(child)
+
+    # Configure Section 1 (Preliminary Pages) sectPr with lowerRoman page numbering (i, ii, iii...)
+    s1_prelim_elem = parse_xml(s1_xml)
+    for c in list(s1_prelim_elem):
+        if c.tag.endswith('pgNumType'):
+            s1_prelim_elem.remove(c)
+    s1_prelim_elem.append(parse_xml('<w:pgNumType xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" w:fmt="lowerRoman" w:start="1"/>'))
+
+    # Configure Section 2 (Main Chapters) sectPr with decimal page numbering starting at 1 (1, 2, 3...)
+    body_sectPr = body.find('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}sectPr')
+    for c in list(body_sectPr):
+        if c.tag.endswith('pgNumType'):
+            body_sectPr.remove(c)
+    body_sectPr.append(parse_xml('<w:pgNumType xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" w:fmt="decimal" w:start="1"/>'))
 
     # Track sequence numbers per chapter
     fig_counts = {1: 0, 2: 0, 3: 0, 4: 0}
@@ -127,10 +142,10 @@ def build_report():
     # ---------------------------------------------------------
     add_h1(doc, "Abstract")
     add_paragraph_styled(doc,
-        "This cooperative training report encapsulates the professional and technical internship undertaken at Al-Hait General Hospital, a primary healthcare institution operating under the governance of the Hail Health Cluster and the Ministry of Health in the Kingdom of Saudi Arabia. Undertaken to fulfill the graduation requirements for the Bachelor of Science in Computer Science at the University of Hail, College of Computer Science and Engineering, the training program bridged academic computing principles with healthcare informatics and hospital IT infrastructure. Key operational responsibilities included computer hardware auditing, operating system deployment and maintenance, local area network (LAN) administration, TCP/IP configuration, endpoint cybersecurity, and end-user clinical support across emergency, outpatient, inpatient, and diagnostic divisions.")
+        "This cooperative training report encapsulates the professional and technical internship undertaken at Al-Hait General Hospital, a primary healthcare institution operating under the governance of the Hail Health Cluster and the Ministry of Health in the Kingdom of Saudi Arabia. The training program was designed to bridge academic theoretical computing principles with practical healthcare informatics and hospital IT infrastructure. Key operational responsibilities included computer hardware auditing, operating system deployment and maintenance, local area network (LAN) administration, TCP/IP configuration, workstation diagnostics, and end-user clinical support across emergency, outpatient, inpatient, and diagnostic divisions.")
 
     add_paragraph_styled(doc,
-        "To overcome clinical laboratory workflow bottlenecks, a full-stack web platform titled 'Riaya' (Intelligent Diagnostic Auditing and Medical Report Platform) was designed and implemented using PHP 8.2 MVC, MySQL, and role-based access control. The platform integrates international standards including Logical Observation Identifiers Names and Codes (LOINC) and International Classification of Diseases (ICD-10). Its deterministic ClinicalEngine verifies laboratory values against Mayo Clinic and ARUP reference intervals, triggering instant STAT alerts for life-threatening panic limits while preventing duplicate 48-hour testing. A zero-PII generative artificial intelligence pipeline powered by OpenRouter LLM translates complex lab findings into clear, educational explanations for patients. The resulting platform delivers robust clinical governance, high performance, and enhanced healthcare accessibility.")
+        "To overcome clinical laboratory workflow bottlenecks, a full-stack web platform titled 'Riaya' (Intelligent Diagnostic Auditing and Medical Report Platform) was designed and implemented using PHP 8.3 MVC, MySQL, and role-based access control. The platform integrates international standards including Logical Observation Identifiers Names and Codes (LOINC) and International Classification of Diseases (ICD-10). Its deterministic ClinicalEngine verifies laboratory values against Mayo Clinic and ARUP reference intervals, triggering instant STAT alerts for life-threatening panic limits while preventing duplicate test orders within a 30-day window or according to custom platform configuration. A zero-PII generative artificial intelligence pipeline powered by OpenRouter LLM translates complex lab findings into clear, educational explanations for patients. The resulting platform delivers robust clinical governance, high performance, and enhanced healthcare accessibility.")
 
     doc.add_page_break()
 
@@ -193,11 +208,14 @@ def build_report():
         "Documents the full engineering lifecycle of 'Riaya' (Intelligent Diagnostic Auditing and Medical Report Platform), detailing its clinical problem statement, software requirements, database modeling, unified design diagrams, role-based user interfaces, and automated quality assurance.",
         bold_prefix="• Chapter III (Coop Project — Riaya): ")
 
-    add_paragraph_styled(doc,
+    p_intro_last = add_paragraph_styled(doc,
         "Synthesizes the overarching conclusions derived from the cooperative training tenure and articulates strategic technical recommendations for both hospital IT operations and future academic cooperative cohorts.",
         bold_prefix="• Chapter IV (Conclusion & Recommendations): ")
 
-    doc.add_page_break()
+    # Attach Section 1 (Preliminary Pages) properties with lowerRoman page numbering (i, ii, iii...)
+    # This automatically transitions to Section 2 (Main Chapters) starting at Page 1 in Arabic numerals
+    pPr_intro = p_intro_last._p.get_or_add_pPr()
+    pPr_intro.append(s1_prelim_elem)
 
     print("Building Chapter 1: Introduction & Training Organization...")
     # ---------------------------------------------------------
@@ -332,29 +350,19 @@ def build_report():
 
     add_h2(doc, "2.1 Requirements Analysis")
     add_paragraph_styled(doc,
-        "During the cooperative training period at Al-Hait General Hospital, duties were embedded within the Information Technology and Technical Support Department. Enterprise healthcare facilities operate in a rigorous, time-critical domain where technical latency or hardware failures directly impact clinical workflows, emergency patient triage, and diagnostic report turnaround. Consequently, duties encompassed an exhaustive requirements analysis of the institution's computing environment, followed by hands-on execution across three functional domains: Technical Support, Applications & Systems, and Networks & Communications.")
+        "During the cooperative training period at Al-Hait General Hospital, duties were embedded within the Information Technology and Technical Support Department. Enterprise healthcare facilities operate in a rigorous, time-critical domain where technical latency or hardware failures directly impact clinical workflows, emergency patient triage, and diagnostic report turnaround. Consequently, duties encompassed an exhaustive requirements analysis of the institution's computing environment, followed by hands-on execution across two primary functional domains: Technical Support and Networks & Communications.")
 
     add_h3(doc, "2.1.1 Technical support")
     add_paragraph_styled(doc,
-        "Technical support operations formed the operational core of daily workplace activities. A comprehensive diagnostic inspection and hardware inventory audit was executed across all operational workstations deployed in administrative suites, outpatient consultation rooms, the medical records archive, the outpatient pharmacy, and inpatient reception desks. Many desktop workstations exhibited severe operational degradation, operating system lag, and recurrent application freezing stemming from prolonged uninterrupted utilization, excessive temporary cache accumulation, and mechanical storage degradation.")
+        "Technical support operations formed the operational core of daily workplace activities. A comprehensive diagnostic inspection and hardware inventory audit was executed across all operational workstations deployed in administrative suites, outpatient consultation rooms, the medical records archive, the outpatient pharmacy, and inpatient reception desks. Many desktop workstations exhibited operational degradation, operating system lag, and application freezing stemming from prolonged uninterrupted utilization, excessive temporary cache accumulation, and mechanical storage degradation.")
 
     add_paragraph_styled(doc,
-        "To resolve these operational deficits, systematic workstation formatting and clean operating system installations were conducted. Computers were backed up, formatted, repartitioned, and re-imaged with enterprise Windows builds configured with the required regional language packages, Active Directory workstation provisioning, and administrative security policies. Diagnostic troubleshooting was systematically performed on systems experiencing monitor freezing, display resolution artifacts, thermal throttling due to internal dust accumulation, and power supply irregularities. Physical maintenance included opening desktop computer chassis, inspecting motherboard capacitors and cooling fans, and verifying SATA/NVMe cable integrity.")
+        "To resolve these operational deficits, systematic workstation formatting and clean operating system installations were conducted. Computers were backed up, formatted, repartitioned, and re-imaged with enterprise Windows builds configured with the required regional language packages, Active Directory workstation provisioning, and administrative security policies. Diagnostic troubleshooting was systematically performed on systems experiencing monitor freezing, display resolution artifacts, thermal throttling due to internal dust accumulation, and power supply irregularities. Physical maintenance included opening desktop computer chassis, inspecting cooling fans, cleaning dust filters, and verifying SATA/NVMe cable integrity.")
 
     add_paragraph_styled(doc,
         "Printer maintenance constituted another prominent technical support responsibility. The hospital employs a heterogeneous fleet of desktop laser printers and high-capacity network multifunction printers (MFPs) across administrative and medical records departments. Tasks included configuring printer driver properties, mapping network print queues, diagnosing paper feed jamming, replacing toner cartridges, and maintaining consumable supply logs in coordination with department supervisors.")
 
-    add_h3(doc, "2.1.2 Apps and system")
-    add_paragraph_styled(doc,
-        "The software ecosystem at Al-Hait General Hospital comprises healthcare enterprise portals, medical imaging viewers, administrative document management suites, and standard office productivity software. Technical responsibilities in this domain included verifying software compatibility, deploying required desktop applications, configuring secure web browsers for hospital internal portal access, and installing Adobe Acrobat PDF tools essential for reviewing medical documentation.")
-
-    add_paragraph_styled(doc,
-        "System security maintenance was executed as a top operational priority. Thorough security scans were conducted across hospital workstations utilizing enterprise endpoint security suites to detect and remediate potential malware, adware, or unauthorized software. Workstation operating system security patches were audited to ensure compliance with Ministry of Health IT security policies. User access management was supported through password resets, user profile configuration, and security permission auditing.")
-
-    add_paragraph_styled(doc,
-        "Furthermore, administrative data management was streamlined using Microsoft Excel. Structured tracking spreadsheets were developed to record the inventory of all hospital computing equipment, printer consumables, toner replacement lifecycles, and IP address mappings. User guides, structured instructional documentation, and orientation slide decks were authored to assist administrative staff in mastering updated desktop software, document navigation, and internal electronic filing protocols.")
-
-    add_h3(doc, "2.1.3 Networks & Communications")
+    add_h3(doc, "2.1.2 Networks & Communications")
     add_paragraph_styled(doc,
         "Reliable networking is critical in a hospital environment where patient records, diagnostic requests, and pharmacy orders must traverse the local area network (LAN) instantly without packet loss or connection drops. Comprehensive networking duties included conducting a full hospital IP address survey, scanning the local network to document assigned static IP addresses for medical equipment, network printers, and servers, while mapping dynamic DHCP pools.")
 
@@ -380,7 +388,7 @@ def build_report():
         ["OS Deployment", "Operating System Imaging & Formatting", "Clean installation of Windows enterprise editions, user profile provisioning, and system performance tuning."],
         ["Network Infrastructure", "LAN Administration & Cable Testing", "IP address auditing, RJ-45 Ethernet crimping, wall port patching, and switch port link verification."],
         ["Peripheral Systems", "Network Printer Configuration & Sharing", "Mapping network print queues, resolving driver conflicts, setting static IPs, and managing toner lifecycles."],
-        ["Cybersecurity & Access", "Endpoint Security & Access Control", "Executing enterprise antivirus malware scans, enforcing password security policies, and managing user access privileges."],
+        ["Workstation Security", "Access Control & Account Maintenance", "Assisting with routine workstation updates, enforcing password security policies, and managing basic user profile configurations."],
         ["Productivity Software", "Data Structuring in Microsoft Excel", "Developing comprehensive inventory sheets, consumable tracking models, and structured technical support logs."]
     ]
     put_table(tech_skills_headers, tech_skills_data, 2, "Technical Skills Acquired during Cooperative Training", col_widths=[1.5, 2.0, 2.77])
@@ -422,7 +430,7 @@ def build_report():
         bold_prefix="3. Lack of Visual Longitudinal Delta Checking: ")
 
     add_paragraph_styled(doc,
-        "Due to fragmented coordination between outpatient clinics, emergency rooms, and inpatient wards, identical diagnostic blood tests are frequently ordered multiple times within a 48-hour window for the same patient, generating unnecessary medical expenditures, lab reagent wastage, and patient physical discomfort.",
+        "Due to fragmented coordination between outpatient clinics, emergency rooms, and inpatient wards, identical diagnostic blood tests are frequently ordered multiple times within a 30-day window (or according to custom platform configuration) for the same patient, generating unnecessary medical expenditures, lab reagent wastage, and patient physical discomfort.",
         bold_prefix="4. Diagnostic Duplication and Test Redundancy: ")
 
     add_paragraph_styled(doc,
@@ -434,11 +442,11 @@ def build_report():
         "To resolve these systemic challenges, 'Riaya' (Intelligent Diagnostic Auditing and Medical Report Platform) was conceived, engineered, and delivered as an enterprise web application. Riaya is an integrated clinical web platform that analyzes laboratory results instantaneously upon release, simplifies diagnostic meanings for patients into clear, reassuring Arabic, highlights abnormal and critical indicators against standardized clinical ranges, visualizes longitudinal comparative trends against historical baselines, and automatically triggers immediate STAT emergency alerts to attending physicians upon detecting critical values.")
 
     add_paragraph_styled(doc,
-        "Riaya is engineered utilizing a high-performance backend powered by PHP 8.2 adhering to a custom Model-View-Controller (MVC) software architecture, a relational MySQL database (InnoDB) fully normalized to Third Normal Form (3NF), and a responsive modern frontend constructed with semantic HTML5, CSS3 Custom Properties, and Vanilla JavaScript (ES6+). The platform integrates international medical standards including Logical Observation Identifiers Names and Codes (LOINC) via live National Library of Medicine (NLM) RESTful web services, and International Classification of Diseases (ICD-10) coding for diagnosis linking. Furthermore, Riaya incorporates a deterministic ClinicalEngine built upon verified clinical reference ranges from Mayo Clinic Laboratories and ARUP Laboratories, paired with a Zero-PII Generative Artificial Intelligence pipeline via OpenRouter LLM for safe, compassionate patient educational report interpretations.")
+        "Riaya is engineered utilizing a high-performance backend powered by PHP 8.3 adhering to a custom Model-View-Controller (MVC) software architecture, a relational MySQL database (InnoDB) fully normalized to Third Normal Form (3NF), and a responsive modern frontend constructed with semantic HTML5, CSS3 Custom Properties, and Vanilla JavaScript (ES6+). The platform integrates international medical standards including Logical Observation Identifiers Names and Codes (LOINC) via live National Library of Medicine (NLM) RESTful web services, and International Classification of Diseases (ICD-10) coding for diagnosis linking. Furthermore, Riaya incorporates a deterministic ClinicalEngine built upon verified clinical reference ranges from Mayo Clinic Laboratories and ARUP Laboratories, paired with a Zero-PII Generative Artificial Intelligence pipeline via OpenRouter LLM for safe, compassionate patient educational report interpretations.")
 
     add_h2(doc, "3.3 Project Objectives")
     add_paragraph_styled(doc,
-        "The strategic engineering and clinical objectives of the Riaya platform are categorized in Table 3.1, detailing the technical mechanisms implemented and their corresponding clinical outcomes.")
+        "The strategic engineering and clinical objectives of the Riaya platform are categorized in the table below, detailing the technical mechanisms implemented and their corresponding clinical outcomes.")
 
     # Table 3.1: Project Objectives
     obj_headers = ["Strategic Objective", "Technical Implementation Mechanism", "Anticipated Clinical & Operational Impact"]
@@ -447,15 +455,54 @@ def build_report():
         ["Automated STAT Critical Alerts", "Push notification engine generating red STAT alert banners on attending physician dashboards upon panic limit breach.", "Zero-latency notification of life-threatening results, requiring mandatory physician acknowledgment and logging."],
         ["Patient Health Empowerment", "Zero-PII OpenRouter AI pipeline translating biochemical data into compassionate, plain-language Arabic explanations.", "Drastically diminishes patient anxiety, eliminates misinformation, and enhances compliance with physician treatment plans."],
         ["Longitudinal Delta Tracking", "Comparative database engine tracking patient historical test results and calculating percentage delta shifts.", "Empowers clinicians to detect subtle progressive physiological declines before acute symptom onset occurs."],
-        ["Duplicate Order Prevention", "Automated 48-hour temporal lookup checking pending/active orders for identical LOINC codes before order confirmation.", "Eliminates diagnostic redundancy, curtails unnecessary hospital laboratory costs, and spares patients repeated venipunctures."],
+        ["Duplicate Order Prevention", "Automated temporal lookup checking pending/active orders within a 30-day window (or according to custom platform configuration) before confirmation.", "Eliminates diagnostic redundancy, curtails unnecessary hospital laboratory costs, and spares patients repeated venipunctures."],
         ["International Standardization", "Integration with NLM LOINC web services for code lookup and WHO ICD-10 diagnostic coding.", "Ensures universal clinical interoperability, semantic consistency, and seamless future national health exchange (HIE) readiness."]
     ]
     put_table(obj_headers, obj_data, 3, "Riaya Project Strategic Objectives, Technical Implementations, and Clinical Impact", col_widths=[1.5, 2.3, 2.47])
 
     add_h2(doc, "3.4 Project Phases and Problem Solution")
     add_paragraph_styled(doc,
-        "The engineering of Riaya followed a structured, phased software development lifecycle (SDLC) tailored to the stringent safety and reliability requirements of healthcare software:",
-        bold_prefix="Systematic Development Phases: ")
+        "The engineering of the Riaya platform was executed adhering to the Agile Software Development Methodology. Given the critical importance of clinical laboratory accuracy and the necessity to continuously incorporate clinician feedback, an iterative Agile lifecycle was adopted in preference to rigid linear paradigms. Development progressed through iterative two-week sprint cycles, enabling continuous refinement of clinical rules, user interface accessibility, and diagnostic workflow validation.")
+
+    add_h3(doc, "3.4.1 Agile Software Development Methodology")
+    add_paragraph_styled(doc,
+        "As depicted in the Agile development lifecycle diagram, the methodology encompasses six continuous, interlocking phases that cycle iteratively throughout the software engineering process:")
+
+    img_agile = os.path.join(REPO_DIR, 'agile_methodology.png')
+    put_figure(img_agile, 3, "Agile Software Development Lifecycle — Iterative Development Phases")
+
+    add_paragraph_styled(doc,
+        "The six iterative Agile phases executed during the project lifecycle are structured as follows:",
+        bold_prefix="Iterative Lifecycle Phases: ")
+
+    add_paragraph_styled(doc,
+        "Capturing clinical diagnostic workflows, physician requirements, laboratory specimen tracking protocols, and patient report accessibility needs directly from hospital operations.",
+        bold_prefix="1. Requirements: ")
+
+    add_paragraph_styled(doc,
+        "Architecting modular MVC backend patterns, database relational schemas (3NF), responsive UI wireframes, and clinical decision engine logic.",
+        bold_prefix="2. Design: ")
+
+    add_paragraph_styled(doc,
+        "Iterative backend and frontend implementation utilizing PHP 8.3 strict typing, MySQL relational storage, RESTful external web services, and vanilla JavaScript interfaces.",
+        bold_prefix="3. Development: ")
+
+    add_paragraph_styled(doc,
+        "Continuous multi-tier testing encompassing unit testing of reference ranges, panic limit alerts, security audits, and clinical scenario simulations.",
+        bold_prefix="4. Testing: ")
+
+    add_paragraph_styled(doc,
+        "Staging modular software builds, configuring database indices, and establishing operational parameters on the hospital staging server.",
+        bold_prefix="5. Deployment: ")
+
+    add_paragraph_styled(doc,
+        "Demonstrating sprint deliverables to clinical mentors and academic supervisors, gathering qualitative feedback, and prioritizing user stories for subsequent sprints.",
+        bold_prefix="6. Review: ")
+
+    add_h3(doc, "3.4.2 Project Development Phases")
+    add_paragraph_styled(doc,
+        "Building upon the Agile framework, the comprehensive engineering process was structured into distinct technical phases:",
+        bold_prefix="Phased Implementation Progression: ")
 
     add_paragraph_styled(doc,
         "Conducting in-depth workflow analysis of hospital clinical laboratory operations, reviewing laboratory request requisitions, specimen processing workflows, reference range variations, and critical value reporting protocols.",
@@ -470,7 +517,7 @@ def build_report():
         bold_prefix="Phase 3: Relational Database Schema Engineering — ")
 
     add_paragraph_styled(doc,
-        "Programming the core clinical services in PHP 8.2: the deterministic ClinicalEngine for reference range and panic limit evaluation, the 48-hour duplicate order alert service, the NLM LOINC autocomplete client, and the OpenRouter AI integration with strict Zero-PII sanitization.",
+        "Programming the core clinical services in PHP 8.3: the deterministic ClinicalEngine for reference range and panic limit evaluation, the configurable 30-day duplicate order alert service, the NLM LOINC autocomplete client, and the OpenRouter AI integration with strict Zero-PII sanitization.",
         bold_prefix="Phase 4: Backend Service & Clinical Logic Implementation — ")
 
     add_paragraph_styled(doc,
@@ -488,7 +535,7 @@ def build_report():
     # Table 3.2: Development Environment & Tech Stack
     tech_stack_headers = ["Layer / Component", "Technology / Tool", "Technical Role & Architecture Rationale"]
     tech_stack_data = [
-        ["Programming Language", "PHP 8.2+ (Strict Types)", "Core backend server runtime; utilizes custom MVC pattern, match expressions, and typed properties for memory safety."],
+        ["Programming Language", "PHP 8.3+ (Strict Types)", "Core backend server runtime; utilizes custom MVC pattern, match expressions, and typed properties for memory safety."],
         ["Database Management", "MySQL 5.7 / 8.0 (InnoDB)", "Relational database riaya_db; 14 normalized tables (3NF), ACID transaction guarantees, and utf8mb4 full Arabic collation."],
         ["Database Connectivity", "PHP Data Objects (PDO)", "Secure data access layer with parameterized prepared statements, preventing SQL injection vulnerabilities."],
         ["Web Server & Runtime", "Apache 2.4 / MAMP Environment", "High-performance web server hosting URL rewriting rules, secure HTTP headers, and virtual host management."],
@@ -505,14 +552,14 @@ def build_report():
     req_data = [
         ["System Administrator", "System Governance & Catalog Oversight", "Manage user accounts and roles; configure hospital clinical departments; curate LOINC tests catalog; auto-populate reference ranges; inspect system audit logs; configure OpenRouter AI parameters."],
         ["Receptionist", "Patient Intake & Scheduling", "Search patient records; manage clinic appointment bookings; audit daily clinic queues; prevent double-booking via schedule slot validation."],
-        ["Treating Physician", "Consultation & Test Requisition", "Access patient EMR; view clinical history; order laboratory tests with LOINC auto-completion; receive 48-hour duplicate warnings; review STAT critical alerts; document treatment plans and diagnoses."],
+        ["Treating Physician", "Consultation & Test Requisition", "Access patient EMR; view clinical history; order laboratory tests with LOINC auto-completion; receive configurable 30-day duplicate warnings; review STAT critical alerts; document treatment plans and diagnoses."],
         ["Laboratory Specialist", "Specimen Triage & Result Analysis", "Access prioritized lab order worklist; input numerical test results; verify real-time panic limit flags; trigger automated doctor alert dispatches upon result authorization."],
         ["Patient", "Personal Diagnostic Health Portal", "View personal appointments; inspect past laboratory diagnostic reports; review color-coded visual indicator range bars; read AI-generated plain-language Arabic explanations; print bilingual medical reports."]
     ]
     put_table(req_headers, req_data, 3, "System Stakeholder Roles and Functional Capabilities Matrix", col_widths=[1.5, 2.0, 2.77])
 
     add_paragraph_styled(doc,
-        "Non-functional requirements for the Riaya platform were strictly defined: (1) Zero-Hallucination Guarantee: Clinical critical values and abnormal alerts are computed exclusively by a deterministic mathematical engine without AI intervention. (2) Zero-PII Privacy Protection: Patient names, national IDs, and contact numbers are strictly scrubbed prior to transmitting anonymized diagnostic summaries to the AI explanation gateway, complying with HIPAA and the Saudi Personal Data Protection Law (PDPL). (3) Performance: Database queries execute in sub-50 milliseconds via strategic B-tree indexing on foreign keys and LOINC codes. (4) Security: Complete protection against OWASP Top 10 vulnerabilities via parameterized queries, input sanitization, CSRF token validation, and secure session management.")
+        "Non-functional requirements for the Riaya platform were strictly defined: (1) Zero-Hallucination Guarantee: Clinical critical values and abnormal alerts are computed exclusively by a deterministic mathematical engine without AI intervention. (2) Zero-PII Privacy Protection: Patient names, national IDs, and contact numbers are strictly scrubbed prior to transmitting anonymized diagnostic summaries to the AI explanation gateway, complying with HIPAA and the Saudi Personal Data Protection Law (PDPL). (3) Performance: High-throughput transactional execution with rapid, optimized query response times achieved via strategic B-tree indexing on foreign keys, normalized relational schema design, and query caching. (4) Security: Rigorous adherence to Open Web Application Security Project (OWASP) security principles through parameterized SQL queries, complete input sanitization, CSRF token validation, and secure session management.")
 
     add_h2(doc, "3.6 System Design Diagrams")
     add_paragraph_styled(doc,
@@ -532,13 +579,13 @@ def build_report():
     # 3.6.2 Entity-Relationship Diagram
     add_h3(doc, "3.6.2 Entity-Relationship Diagram")
     add_paragraph_styled(doc,
-        "The relational database schema is structured into fourteen normalized entities designed to ensure absolute referential integrity, zero data redundancy, and robust performance under concurrent transactional workloads.")
+        "The production database architecture is engineered across fourteen normalized relational tables (3NF) to guarantee complete referential integrity, zero data redundancy, and robust transactional consistency under concurrent healthcare workloads. To preserve conceptual clarity and focus on the fundamental diagnostic domain, the accompanying Chen Entity-Relationship Diagram models and highlights the primary foundational entities: `users` (central authentication and RBAC), `patients` (demographic profiling), `doctors` (clinical provider accounts), `tests_catalog` (LOINC-standardized analyte definitions), `reference_ranges` (age/gender clinical decision thresholds), `lab_orders` (diagnostic requisitions), and `lab_results` (quantitative measurements and clinical flags).")
 
     img_erd = os.path.join(DIAG_DIR, '02_er_diagram_chen.png')
-    put_figure(img_erd, 3, "Riaya Relational Database Entity-Relationship Diagram (Chen Notation)")
+    put_figure(img_erd, 3, "Riaya Relational Database Entity-Relationship Diagram (Chen Notation) — Primary Domain Entities")
 
     add_paragraph_styled(doc,
-        "As detailed in the Chen Entity-Relationship Diagram, the database structure centers on core transactional entities: `users` stores system actors with role differentiation (`admin`, `receptionist`, `doctor`, `lab`, `patient`); `departments` organizes clinical units; `doctor_schedules` and `appointments` regulate outpatient scheduling; `tests_catalog` maintains standardized LOINC codes, reference intervals, and panic limits; `lab_orders` links doctor requisitions with priority levels; `lab_results` stores quantitative values, flags, and delta checks; `critical_alerts` manages urgent STAT physician alerts; `treatment_plans` and `medical_reports` document clinical follow-up; while `audit_logs` and `notifications` maintain comprehensive operational auditability.")
+        "As detailed in the Chen Entity-Relationship Diagram, primary entities interact through strict foreign key cardinalities (e.g., one-to-many from doctors to lab orders, and one-to-many from lab orders to test results). The remaining auxiliary tables within the fourteen-table physical schema—including `departments` (clinical unit categorization), `doctor_schedules` (clinic availability slots), `appointments` (patient intake bookings), `critical_alerts` (STAT life-threatening panic notifications), `treatment_plans` (post-diagnostic clinical notes), `audit_logs` (regulatory PDPL activity tracking), and `password_resets` (cryptographic security tokens)—provide supporting operational scaffolding, administrative management, and regulatory compliance.")
 
     # 3.6.3 Sequence Diagrams
     add_h3(doc, "3.6.3 Sequence Diagrams")
@@ -549,7 +596,7 @@ def build_report():
     put_figure(img_seq_order, 3, "Sequence Diagram: Doctor Consultation, LOINC Test Ordering, and Duplicate Prevention")
 
     add_paragraph_styled(doc,
-        "The sequence diagram illustrates the doctor laboratory ordering workflow. The physician queries the LOINC catalog, and upon selecting an analyte, the platform's DuplicateAlert engine automatically performs a temporal lookup on `lab_orders` for the patient. If the identical test was ordered within 48 hours, an alert modal warns the physician, requiring clinical justification before dispatching the order to the laboratory queue.")
+        "The sequence diagram illustrates the doctor laboratory ordering workflow. The physician queries the LOINC catalog, and upon selecting an analyte, the platform's DuplicateAlert engine automatically performs a temporal lookup on `lab_orders` for the patient. If the identical test was ordered within a 30-day window (or according to custom platform configuration), an alert modal warns the physician, requiring clinical justification before dispatching the order to the laboratory queue.")
 
     img_seq_lab = os.path.join(DIAG_DIR, '04_sequence_lab_upload_result.png')
     put_figure(img_seq_lab, 3, "Sequence Diagram: Laboratory Result Entry, Deterministic Panic Limit Evaluation, and STAT Alert Notification")
@@ -672,7 +719,7 @@ def build_report():
     img_doc_order = os.path.join(SCREEN_DIR, '03_doctor', '09_order_test_filled.png')
     put_figure(img_doc_order, 3, "Standardized LOINC Laboratory Test Requisition Interface")
     add_paragraph_styled(doc,
-        "The test order interface allows physicians to select standardized laboratory tests using LOINC autocompletion, specify clinical urgency (Routine vs. STAT), record clinical indications, and link ICD-10 diagnostic codes. The system automatically executes a 48-hour duplicate order check before dispatching.")
+        "The test order interface allows physicians to select standardized laboratory tests using LOINC autocompletion, specify clinical urgency (Routine vs. STAT), record clinical indications, and link ICD-10 diagnostic codes. The system automatically executes a duplicate order check (for identical tests ordered within a 30-day window or according to custom platform configuration) before dispatching.")
 
     img_doc_crit = os.path.join(SCREEN_DIR, '03_doctor', '11_critical_result_view.png')
     put_figure(img_doc_crit, 3, "Life-Threatening STAT Critical Value Alert Banner on Physician Screen")
@@ -744,11 +791,11 @@ def build_report():
         bold_prefix="2. External API Integration & Data Sanitization Testing: ")
 
     add_paragraph_styled(doc,
-        "Auditing the application against the OWASP Top 10 web vulnerabilities. Verification confirmed that all database queries utilize PDO prepared statements with strict parameter binding (eliminating SQL injection risks), all dynamic user outputs are escaped via `htmlspecialchars` (preventing Cross-Site Scripting), anti-CSRF tokens guard every state-modifying POST transaction, and role-based session middleware rigorously blocks horizontal and vertical privilege escalation.",
+        "Auditing the web application against recognized web application vulnerabilities following OWASP guidelines. Verification confirmed that all database queries utilize PDO prepared statements with strict parameter binding (preventing SQL injection), all dynamic user outputs are escaped via `htmlspecialchars` (preventing Cross-Site Scripting), anti-CSRF tokens guard every state-modifying POST transaction, and role-based session middleware rigorously blocks horizontal and vertical privilege escalation.",
         bold_prefix="3. Security and Penetration Resistance Auditing: ")
 
     add_paragraph_styled(doc,
-        "Simulating complete end-to-end clinical journeys: (a) Receptionist books consultation -> (b) Doctor reviews EMR and orders LOINC-coded CBC and Blood Glucose -> (c) Duplicate alert is verified when re-ordering within 48 hours -> (d) Lab enters critically low Hemoglobin (6.2 g/dL) -> (e) System instantly posts STAT red banner on doctor screen -> (f) Doctor acknowledges alert and writes treatment plan -> (g) Patient inspects report and reads Arabic AI educational summary. All scenarios executed flawlessly.",
+        "Simulating complete end-to-end clinical journeys: (a) Receptionist books consultation -> (b) Doctor reviews EMR and orders LOINC-coded CBC and Blood Glucose -> (c) Duplicate alert is verified when re-ordering within the 30-day window (or according to custom platform configuration) -> (d) Lab enters critically low Hemoglobin (6.2 g/dL) -> (e) System instantly posts STAT red banner on doctor screen -> (f) Doctor acknowledges alert and writes treatment plan -> (g) Patient inspects report and reads Arabic AI educational summary. All scenarios executed flawlessly.",
         bold_prefix="4. End-to-End Clinical Scenario Simulation: ")
 
     doc.add_page_break()
@@ -764,7 +811,7 @@ def build_report():
         "The cooperative training program completed at Al-Hait General Hospital, under the auspices of the College of Computer Science and Engineering at the University of Hail, represented an invaluable capstone experience that successfully fused academic computing principles with the demanding operational realities of enterprise healthcare information technology. By embedding within the hospital's IT and technical support operations, direct contributions were made toward maintaining critical hardware infrastructure, restoring lagging workstations, securing local area networks, resolving printer driver bottlenecks, and supporting clinical staff across administrative, outpatient, and medical records departments.")
 
     add_paragraph_styled(doc,
-        "Concurrently, the internship fostered acute awareness of the communication barriers and diagnostic inefficiencies present in conventional healthcare delivery. This direct clinical exposure culminated in the architectural design, implementation, and successful delivery of 'Riaya'. By uniting modern web engineering in PHP 8.2 and MySQL with international medical vocabularies (LOINC and ICD-10), deterministic reference range engines, proactive STAT critical alert mechanisms, and Zero-PII generative AI educational interpretation, Riaya proves that well-architected software can bridge the cognitive gap between complex medical diagnostics and patient comprehension while establishing life-saving safety nets for attending physicians. The knowledge, problem-solving independence, and technical confidence gained throughout this cooperative journey provide a solid foundation for future professional excellence in computer science and healthcare informatics.")
+        "Concurrently, the internship fostered acute awareness of the communication barriers and diagnostic inefficiencies present in conventional healthcare delivery. This direct clinical exposure culminated in the architectural design, implementation, and successful delivery of 'Riaya'. By uniting modern web engineering in PHP 8.3 and MySQL with international medical vocabularies (LOINC and ICD-10), deterministic reference range engines, proactive STAT critical alert mechanisms, and Zero-PII generative AI educational interpretation, Riaya proves that well-architected software can bridge the cognitive gap between complex medical diagnostics and patient comprehension while establishing life-saving safety nets for attending physicians. The knowledge, problem-solving independence, and technical confidence gained throughout this cooperative journey provide a solid foundation for future professional excellence in computer science and healthcare informatics.")
 
     add_h2(doc, "Recommendations")
     add_paragraph_styled(doc,
@@ -808,7 +855,7 @@ def build_report():
         ("Ministry of Health (MOH), Kingdom of Saudi Arabia", "2024", "Health Sector Transformation Program & Digital Health Strategy Overview", "https://www.moh.gov.sa/"),
         ("Hail Health Cluster", "2024", "Official Portal of the Hail Health Cluster — Facilities and Services Directory", "https://hailthy.net/"),
         ("Saudi Central Board for Accreditation of Healthcare Institutions (CBAHI)", "2023", "National Standards for Hospitals (3rd Edition)", "https://cbahi.gov.sa/"),
-        ("The PHP Group", "2024", "PHP 8.2 Documentation & Language Reference Manual", "https://www.php.net/manual/en/"),
+        ("The PHP Group", "2024", "PHP 8.3 Documentation & Language Reference Manual", "https://www.php.net/manual/en/"),
         ("Oracle Corporation", "2024", "MySQL 8.0 Reference Manual — InnoDB Storage Engine Architecture", "https://dev.mysql.com/doc/refman/8.0/en/"),
         ("Open Web Application Security Project (OWASP)", "2023", "OWASP Top Ten Web Application Security Risks", "https://owasp.org/www-project-top-ten/"),
         ("Saudi Data & AI Authority (SDAIA)", "2023", "Personal Data Protection Law (PDPL) Implementing Regulations in the Kingdom of Saudi Arabia", "https://sdaia.gov.sa/"),
