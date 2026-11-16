@@ -558,6 +558,32 @@ def build_report():
     ]
     put_table(req_headers, req_data, 3, "System Stakeholder Roles and Functional Capabilities Matrix", col_widths=[1.5, 2.0, 2.77])
 
+    add_paragraph_styled(
+        doc,
+        "The core functional capabilities of the Riaya platform are systematically organized across the primary healthcare stakeholder roles to support an end-to-end clinical diagnostic workflow:",
+        bold_prefix="System Functional Requirements: "
+    )
+    add_paragraph_styled(
+        doc,
+        "Enables patients to access and review laboratory test results accompanied by simplified Arabic medical explanations, compare current numerical findings against prior historical tests to track clinical trends, and schedule outpatient clinic appointments.",
+        bold_prefix="(1) Patient Services: "
+    )
+    add_paragraph_styled(
+        doc,
+        "Empowers physicians to issue diagnostic laboratory requisitions with automated duplicate test prevention within a 30-day window or according to custom platform configuration, receive real-time critical alert notifications upon detection of panic values, and record comprehensive post-diagnostic treatment plans.",
+        bold_prefix="(2) Physician Services: "
+    )
+    add_paragraph_styled(
+        doc,
+        "Enables laboratory specialists to enter quantitative analyte measurements securely, utilize deterministic verification against LOINC reference ranges to flag abnormal values, and transmit validated diagnostic reports to ordering physicians.",
+        bold_prefix="(3) Laboratory Technician Services: "
+    )
+    add_paragraph_styled(
+        doc,
+        "Provides administrative tools to manage role-based user accounts and permissions, curate the standardized diagnostic test catalog and age/gender-specific decision thresholds, and review comprehensive audit logs to ensure patient data protection and regulatory compliance.",
+        bold_prefix="(4) Administrative Services: "
+    )
+
     add_paragraph_styled(doc,
         "Non-functional requirements for the Riaya platform were strictly defined: (1) Zero-Hallucination Guarantee: Clinical critical values and abnormal alerts are computed exclusively by a deterministic mathematical engine without AI intervention. (2) Zero-PII Privacy Protection: Patient names, national IDs, and contact numbers are strictly scrubbed prior to transmitting anonymized diagnostic summaries to the AI explanation gateway, complying with HIPAA and the Saudi Personal Data Protection Law (PDPL). (3) Performance: High-throughput transactional execution with rapid, optimized query response times achieved via strategic B-tree indexing on foreign keys, normalized relational schema design, and query caching. (4) Security: Rigorous adherence to Open Web Application Security Project (OWASP) security principles through parameterized SQL queries, complete input sanitization, CSRF token validation, and secure session management.")
 
