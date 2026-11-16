@@ -139,7 +139,7 @@ ReportTerm5/
    ├── Training Organization Name : (24pt bold)
    ├── [اسم جهة التدريب - مثل Al-Hait General Hospital] (26pt bold)
    ├── Under Supervision of Academic Advisor: (18pt bold)
-   ├── [اسم المشرفة الأكاديمية - مثل Al-Bandari Al-Otaibi] (20pt bold)
+   ├── [اسم المشرفة الأكاديمية مسبوقاً بـ Dr. - مثل Dr. Al-Bandari Al-Otaibi] (20pt bold)
    └── Submitted by: [اسم الطالبة] | [الرقم الجامعي] (18pt bold)
 
 2. Abstract                                  [Heading 1]
@@ -192,8 +192,7 @@ ReportTerm5/
     │   ├── 3.7.4 Clinical Physician Portal  [Heading 3] ← Figures 3.19–3.23
     │   ├── 3.7.5 Laboratory Information System [Heading 3] ← Figures 3.24, 3.25
     │   └── 3.7.6 Patient Health Portal      [Heading 3] ← Figures 3.26–3.30
-    ├── 3.8 Testing and Quality Assurance    [Heading 2]
-    └── 3.9 Future Work                      [Heading 2]
+    └── 3.8 Testing and Quality Assurance    [Heading 2]
 
 11. CHAPTER IV:  CONCLUSION                  [Heading 1]
     ├── Conclusion                           [Heading 2]
@@ -233,7 +232,7 @@ ReportTerm5/
    - Training Organization Name : (24pt bold)
    - [اسم جهة التدريب] (26pt bold)
    - Under Supervision of Academic Advisor: (18pt bold)
-   - [اسم المشرفة/المشرف] (20pt bold)
+   - [اسم المشرفة/المشرف مسبوقاً باللقب الأكاديمي Dr. - مثل Dr. Al-Bandari Al-Otaibi] (20pt bold)
    - Submitted by: [اسم الطالب/الطالبة] | [الرقم الجامعي] (18pt bold)
 
 3. فصول التقرير الأربعة الإلزامية:
@@ -244,11 +243,13 @@ ReportTerm5/
    - References: قائمة مراجع أكاديمية بنمط APA مدعومة بروابط نشطة.
    - الملحق (Appendix): محذوف نهائياً.
 
-4. التسميات والحقول:
+4. التسميات والحقول وقاعدة الإشارة للصور في الشرح:
    - التسميات أسفل الصور وأعلى الجداول.
-   - الصيغة البرمجية: Figure {chapter}. + SEQ Figure + : Caption.
+   - الصيغة البرمجية للتسميات: Figure {chapter}. + SEQ Figure + : Caption.
    - جميع عناصر fldChar و instrText يجب أن تقع داخل عناصر <w:r> حصراً وبلا أي استثناء.
-   - جدول المحتويات وقائمة الأشكال والجداول تعتمد حقول وورد الديناميكية وتُحدّث تلقائياً عبر settings.xml (<w:updateFields w:val="true"/>).
+   - **قاعدة الإشارة للصور في النص السردي (Strict Generic Reference Rule):** يمنع منعاً باتاً كتابة أرقام الأشكال الثابتة (مثل Figure 3.2 أو Figure 1.1) داخل النص السردي للشرح؛ بل يجب استخدام تعابير وصفية عامة مثل: `The figure illustrates...` أو `As depicted in the diagram...` أو `The sequence diagram demonstrates...` أو `As shown in the interface screenshot...`. السبب: التسميات التوضيحية (Captions) تعتمد حقول SEQ وتتغير أرقامها تلقائياً عند إضافة أو حذف أي صورة، في حين أن النص الثابت لا يتغير تلقائياً، لذا يجب تجنب ذكر الأرقام في النص لضمان عدم حدوث تضارب.
+   - **حذف الأعمال المستقبلية (Future Work):** تم حذف قسم Future Work نهائياً بناءً على الاعتماد الأكاديمي.
+   - جدول المحتويات وقائمة الأشكال والجداول تعتمد حقول وورد الديناميكية وتُحدّث تلقائياً عبر settings.xml (<w:updateFields w:val="true"/>) وسكربت update_word_fields.py.
 ```
 
 ---
@@ -281,5 +282,6 @@ print(f'Broken fldChar: {broken}')
 
 | التاريخ | الإصدار | التعديلات المنفذة | السبب |
 |---|---|---|---|
+| **2026-11-16** | **2.2.0 (Advisor & Image Rules)** | • إضافة اللقب الأكاديمي Dr. أمام اسم المشرفة الأكاديمية (`Dr. Al-Bandari Al-Otaibi`).<br>• حذف قسم الأعمال المستقبلية (3.9 Future Work) نهائياً من التقرير والقالب.<br>• منع كتابة أرقام الأشكال الثابتة (Figure X.X) في شروحات النصوص واعتماد الإشارة الوصفية العامة لتفادي التضارب عند تحديث حقول SEQ.<br>• تحديث القالب وسكربتات التوليد وإعادة توليد النسخ المعتمدة بنجاح. | ملاحظات المستخدم وضبط القالب للمشاريع المستقبلية. |
 | **2026-11-16** | **2.1.0 (Fixes & Standard)** | • معالجة مشكلة تكرار جدول المحتويات نهائياً بتفريغ عناصر الـ Body من قوالب SDT العالقة.<br>• عزل صفحة الغلاف كـ Section 0 مستقل تماماً بدون ترقيم وبدون ترويسة.<br>• تقليص المستخلص (Abstract) ليكون 3/4 صفحة بدقة (~220 كلمة).<br>• تقليص الشكر والتقدير (Acknowledgments) ليكون نصف صفحة أو أقل (~115 كلمة).<br>• إزالة كافة الكلمات والنصوص العربية لتكون وثيقة التقرير بالإنجليزية 100% (Strict English-Only).<br>• تحديث سكربت تحديث الحقول update_word_fields.py لتفادي الحوارات المعلقة. | ملاحظات المستخدم وضبط القالب المعياري لكافة المشاريع المستقبلية. |
 | **2026-11-16** | **2.0.0 (Term 5)** | • إنشاء مستودع `ReportTerm5`.<br>• اعتماد صفحة الغلاف الجديدة مع شعار جامعة حائل والخطوط المعتمدة.<br>• اعتماد عناوين الشباتر الأربعة الرسمية وحذف الـ Appendix نهائياً.<br>• حصر الفصل الأول في جهة التدريب وموقعها وتاريخها ورؤيتها دون التطرق لدور الطالبة.<br>• دمج التقارير الشهرية في الفصل الثاني دون ذكر للأشهر أو المدد الزمنية.<br>• إبراز المعايير الرسمية في مشروع رعاية: LOINC و ICD-10 و OpenRouter AI ومصادر الحدود الحرجة.<br>• توفير سكربت بايثون لتوليد التقرير كاملاً بالإنجليزية في 56 صفحة مع تحديث حقول الوورد والفهارس.<br>• توثيق البرومبت الشامل الجديد في README.md. | طلب المستخدم ومطابقة قالب Term 5 الجديد لجامعة حائل. |

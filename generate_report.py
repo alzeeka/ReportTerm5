@@ -4,7 +4,7 @@ ReportTerm5 - Automated Cooperative Training Report Generator
 Project: Riaya Medical Diagnostics Platform
 Student: Shadia Essa Al-Enezi (ID: 202304937)
 Organization: Al-Hait General Hospital (Hail Health Cluster)
-Supervisor: Al-Bandari Al-Otaibi
+Supervisor: Dr. Al-Bandari Al-Otaibi
 University: University of Hail, College of Computer Science and Engineering
 """
 
@@ -105,7 +105,7 @@ def build_report():
 
     p_adv_name = doc.add_paragraph()
     set_para_format(p_adv_name, before_pt=2, after_pt=36, line_spacing=1.15, align=WD_ALIGN_PARAGRAPH.CENTER)
-    r = p_adv_name.add_run("Al-Bandari Al-Otaibi")
+    r = p_adv_name.add_run("Dr. Al-Bandari Al-Otaibi")
     set_run_font(r, "Times New Roman", 20, bold=True, color=COLOR_DARK_BLUE)
 
     p_sub_lbl = doc.add_paragraph()
@@ -142,7 +142,7 @@ def build_report():
         "First and foremost, all praise, gratitude, and adoration are due to Almighty Allah for bestowing upon me the strength, perseverance, and enlightenment required to successfully complete this cooperative training program and bring this technical report to fruition.")
 
     add_paragraph_styled(doc,
-        "I express my profound gratitude to my academic advisor, Al-Bandari Al-Otaibi, for her scholarly stewardship, continuous encouragement, and constructive critiques throughout this internship. Sincere appreciation is also extended to the leadership, IT administration, medical staff, and technical supervisors at Al-Hait General Hospital and the Hail Health Cluster for their professional hospitality and mentorship. Furthermore, I convey my heartfelt thanks to the faculty of the College of Computer Science and Engineering at the University of Hail, and to my beloved family for their unconditional love, patience, and constant prayers.")
+        "I express my profound gratitude to my academic advisor, Dr. Al-Bandari Al-Otaibi, for her scholarly stewardship, continuous encouragement, and constructive critiques throughout this internship. Sincere appreciation is also extended to the leadership, IT administration, medical staff, and technical supervisors at Al-Hait General Hospital and the Hail Health Cluster for their professional hospitality and mentorship. Furthermore, I convey my heartfelt thanks to the faculty of the College of Computer Science and Engineering at the University of Hail, and to my beloved family for their unconditional love, patience, and constant prayers.")
 
     doc.add_page_break()
 
@@ -230,7 +230,7 @@ def build_report():
     put_figure(img_hosp, 1, "Al-Hait General Hospital — Administrative and Clinical Complex")
 
     add_paragraph_styled(doc,
-        "As illustrated in Figure 1.1, Al-Hait General Hospital comprises a modern, purpose-built medical complex featuring dedicated wings for outpatient clinical consultations, fully equipped emergency trauma bays, inpatient medical and surgical wards, specialized hemodialysis stations, digital diagnostic imaging suites, automated clinical laboratories, and centralized administrative offices. The hospital represents a vital lifeline for south Hail, handling significant daily patient throughput across emergency admissions, routine outpatient specialty appointments, routine laboratory specimen screenings, and chronic disease management regimens.")
+        "As illustrated in the facility image, Al-Hait General Hospital comprises a modern, purpose-built medical complex featuring dedicated wings for outpatient clinical consultations, fully equipped emergency trauma bays, inpatient medical and surgical wards, specialized hemodialysis stations, digital diagnostic imaging suites, automated clinical laboratories, and centralized administrative offices. The hospital represents a vital lifeline for south Hail, handling significant daily patient throughput across emergency admissions, routine outpatient specialty appointments, routine laboratory specimen screenings, and chronic disease management regimens.")
 
     add_paragraph_styled(doc,
         "Beyond clinical treatment, Al-Hait General Hospital plays a critical civic role in executing national public health screening campaigns, seasonal vaccination drives, epidemiological surveillance, and health education initiatives across the southern sector of the Hail region. The institution's day-to-day operations rely upon an intricate blend of medical technology, digital records systems, and enterprise administrative networks managed by dedicated clinical and technical teams.")
@@ -287,7 +287,7 @@ def build_report():
     put_figure(img_map, 1, "Hail Health Cluster Geographic and Healthcare Facilities Network")
 
     add_paragraph_styled(doc,
-        "As depicted in Figure 1.2, Al-Hait General Hospital serves as an anchor healthcare facility within the southern geographic perimeter of the Hail Health Cluster. The hospital maintains direct communication links with urban tertiary hospitals for patient transfer protocols, tele-consultation reviews, and regional epidemiology reporting, making its local network and IT uptime crucial to healthcare continuity.")
+        "As depicted in the regional health network diagram, Al-Hait General Hospital serves as an anchor healthcare facility within the southern geographic perimeter of the Hail Health Cluster. The hospital maintains direct communication links with urban tertiary hospitals for patient transfer protocols, tele-consultation reviews, and regional epidemiology reporting, making its local network and IT uptime crucial to healthcare continuity.")
 
     add_h3(doc, "Vision")
     add_paragraph_styled(doc,
@@ -527,7 +527,7 @@ def build_report():
     put_figure(img_usecase, 3, "Riaya Platform Unified Use Case Model across All Operational Roles")
 
     add_paragraph_styled(doc,
-        "As modeled in Figure 3.1, the Administrator governs system users, clinical departments, LOINC catalog curation, and platform auditing. The Receptionist manages patient check-ins and appointment schedules. The Treating Physician accesses EMRs, orders LOINC-coded laboratory tests with duplicate alert interception, receives urgent STAT alerts, and documents treatment plans. The Laboratory Specialist triages pending specimen orders, enters quantitative test data, and authorizes clinical results. The Patient accesses self-service health records, visual indicator bars, and educational Arabic AI summaries.")
+        "As modeled in the Use Case diagram, the Administrator governs system users, clinical departments, LOINC catalog curation, and platform auditing. The Receptionist manages patient check-ins and appointment schedules. The Treating Physician accesses EMRs, orders LOINC-coded laboratory tests with duplicate alert interception, receives urgent STAT alerts, and documents treatment plans. The Laboratory Specialist triages pending specimen orders, enters quantitative test data, and authorizes clinical results. The Patient accesses self-service health records, visual indicator bars, and educational Arabic AI summaries.")
 
     # 3.6.2 Entity-Relationship Diagram
     add_h3(doc, "3.6.2 Entity-Relationship Diagram")
@@ -538,7 +538,7 @@ def build_report():
     put_figure(img_erd, 3, "Riaya Relational Database Entity-Relationship Diagram (Chen Notation)")
 
     add_paragraph_styled(doc,
-        "As detailed in the Chen ERD (Figure 3.2), the database structure centers on core transactional entities: `users` stores system actors with role differentiation (`admin`, `receptionist`, `doctor`, `lab`, `patient`); `departments` organizes clinical units; `doctor_schedules` and `appointments` regulate outpatient scheduling; `tests_catalog` maintains standardized LOINC codes, reference intervals, and panic limits; `lab_orders` links doctor requisitions with priority levels; `lab_results` stores quantitative values, flags, and delta checks; `critical_alerts` manages urgent STAT physician alerts; `treatment_plans` and `medical_reports` document clinical follow-up; while `audit_logs` and `notifications` maintain comprehensive operational auditability.")
+        "As detailed in the Chen Entity-Relationship Diagram, the database structure centers on core transactional entities: `users` stores system actors with role differentiation (`admin`, `receptionist`, `doctor`, `lab`, `patient`); `departments` organizes clinical units; `doctor_schedules` and `appointments` regulate outpatient scheduling; `tests_catalog` maintains standardized LOINC codes, reference intervals, and panic limits; `lab_orders` links doctor requisitions with priority levels; `lab_results` stores quantitative values, flags, and delta checks; `critical_alerts` manages urgent STAT physician alerts; `treatment_plans` and `medical_reports` document clinical follow-up; while `audit_logs` and `notifications` maintain comprehensive operational auditability.")
 
     # 3.6.3 Sequence Diagrams
     add_h3(doc, "3.6.3 Sequence Diagrams")
@@ -549,13 +549,13 @@ def build_report():
     put_figure(img_seq_order, 3, "Sequence Diagram: Doctor Consultation, LOINC Test Ordering, and Duplicate Prevention")
 
     add_paragraph_styled(doc,
-        "Figure 3.3 illustrates the doctor laboratory ordering workflow. The physician queries the LOINC catalog, and upon selecting an analyte, the platform's DuplicateAlert engine automatically performs a temporal lookup on `lab_orders` for the patient. If the identical test was ordered within 48 hours, an alert modal warns the physician, requiring clinical justification before dispatching the order to the laboratory queue.")
+        "The sequence diagram illustrates the doctor laboratory ordering workflow. The physician queries the LOINC catalog, and upon selecting an analyte, the platform's DuplicateAlert engine automatically performs a temporal lookup on `lab_orders` for the patient. If the identical test was ordered within 48 hours, an alert modal warns the physician, requiring clinical justification before dispatching the order to the laboratory queue.")
 
     img_seq_lab = os.path.join(DIAG_DIR, '04_sequence_lab_upload_result.png')
     put_figure(img_seq_lab, 3, "Sequence Diagram: Laboratory Result Entry, Deterministic Panic Limit Evaluation, and STAT Alert Notification")
 
     add_paragraph_styled(doc,
-        "Figure 3.4 models the laboratory result verification workflow. When the laboratory specialist enters a numerical value, the backend ClinicalEngine evaluates the result against the test's critical thresholds. If a panic limit is breached, the result is flagged as 'critical', an alert record is created in `critical_alerts`, and an instant STAT alert banner is pushed to the attending physician's workspace requiring formal clinical acknowledgment.")
+        "The sequence diagram models the laboratory result verification workflow. When the laboratory specialist enters a numerical value, the backend ClinicalEngine evaluates the result against the test's critical thresholds. If a panic limit is breached, the result is flagged as 'critical', an alert record is created in `critical_alerts`, and an instant STAT alert banner is pushed to the attending physician's workspace requiring formal clinical acknowledgment.")
 
     # 3.6.4 Clinical Process Flowcharts
     add_h3(doc, "3.6.4 Clinical Process Flowcharts")
@@ -566,13 +566,13 @@ def build_report():
     put_figure(img_flow_loinc, 3, "Clinical Flowchart: LOINC Standardization and Automated Clinical Range Population")
 
     add_paragraph_styled(doc,
-        "Figure 3.5 outlines the automated LOINC catalog enrichment process. When an administrator inputs a diagnostic test name, an asynchronous query executes against the NLM LOINC web service to retrieve official codes. The platform then prompts the clinical range generator to populate verified biological reference intervals and panic limits sourced from Mayo Clinic Laboratories and ARUP Laboratories standards.")
+        "The clinical flowchart outlines the automated LOINC catalog enrichment process. When an administrator inputs a diagnostic test name, an asynchronous query executes against the NLM LOINC web service to retrieve official codes. The platform then prompts the clinical range generator to populate verified biological reference intervals and panic limits sourced from Mayo Clinic Laboratories and ARUP Laboratories standards.")
 
     img_flow_ai = os.path.join(DIAG_DIR, '06_flowchart_patient_ai_explanation.png')
     put_figure(img_flow_ai, 3, "Clinical Flowchart: Patient Zero-PII Generative AI Arabic Explanation Pipeline")
 
     add_paragraph_styled(doc,
-        "Figure 3.6 outlines the patient educational explanation workflow. When a patient requests an explanation, all personally identifiable information (PII) is completely stripped. The numerical findings, reference ranges, and clinical classifications are structured into a prompt dispatched via OpenRouter API. The returned explanation is validated for professional, empathetic Arabic language, mandatory medical disclaimers, and stored securely for patient review.")
+        "The clinical flowchart outlines the patient educational explanation workflow. When a patient requests an explanation, all personally identifiable information (PII) is completely stripped. The numerical findings, reference ranges, and clinical classifications are structured into a prompt dispatched via OpenRouter API. The returned explanation is validated for professional, empathetic Arabic language, mandatory medical disclaimers, and stored securely for patient review.")
 
     # 3.7 System Interfaces Overview
     add_h2(doc, "3.7 System Interfaces Overview")
@@ -750,28 +750,6 @@ def build_report():
     add_paragraph_styled(doc,
         "Simulating complete end-to-end clinical journeys: (a) Receptionist books consultation -> (b) Doctor reviews EMR and orders LOINC-coded CBC and Blood Glucose -> (c) Duplicate alert is verified when re-ordering within 48 hours -> (d) Lab enters critically low Hemoglobin (6.2 g/dL) -> (e) System instantly posts STAT red banner on doctor screen -> (f) Doctor acknowledges alert and writes treatment plan -> (g) Patient inspects report and reads Arabic AI educational summary. All scenarios executed flawlessly.",
         bold_prefix="4. End-to-End Clinical Scenario Simulation: ")
-
-    # 3.9 Future Work
-    add_h2(doc, "3.9 Future Work")
-    add_paragraph_styled(doc,
-        "To further expand the clinical reach and technical sophistication of Riaya, several strategic enhancements are proposed for future development phases:",
-        bold_prefix="Future Strategic Enhancements: ")
-
-    add_paragraph_styled(doc,
-        "Implementing Health Level 7 (HL7) Version 2.x and Fast Healthcare Interoperability Resources (FHIR) RESTful APIs to enable seamless bidirectional data interchange with the Ministry of Health's centralized Seha platform, national laboratory information exchanges, and regional hospital networks.",
-        bold_prefix="1. HL7 / FHIR Standards Integration: ")
-
-    add_paragraph_styled(doc,
-        "Developing cross-platform native mobile applications for iOS and Android utilizing Flutter or React Native, incorporating secure biometric authentication, push notifications for critical value alerts, and direct patient-physician telehealth messaging.",
-        bold_prefix="2. Native Mobile Applications for iOS & Android: ")
-
-    add_paragraph_styled(doc,
-        "Integrating machine learning models to analyze longitudinal delta trends across multiple biological markers simultaneously, providing early automated risk scores for sepsis, acute kidney injury (AKI), or diabetic ketoacidosis (DKA) prior to overt clinical decompensation.",
-        bold_prefix="3. Predictive Clinical Deterioration Analytics: ")
-
-    add_paragraph_styled(doc,
-        "Extending the deterministic ClinicalEngine to automatically ingest and cross-reference patient active medication profiles, issuing automated alerts when prescribed drugs are known to interfere with specific laboratory analyte measurements.",
-        bold_prefix="4. Pharmacogenomic and Drug-Lab Interference Cross-Checking: ")
 
     doc.add_page_break()
 

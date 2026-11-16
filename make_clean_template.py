@@ -64,7 +64,7 @@ def make_clean_template():
 
     p_adv_name = doc.add_paragraph()
     set_para_format(p_adv_name, before_pt=2, after_pt=36, line_spacing=1.15, align=docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER)
-    r = p_adv_name.add_run("[Advisor Name]")
+    r = p_adv_name.add_run("Dr. [Advisor Name]")
     set_run_font(r, "Times New Roman", 20, bold=True, color=COLOR_DARK_BLUE)
 
     p_sub_lbl = doc.add_paragraph()
@@ -90,7 +90,7 @@ def make_clean_template():
 
     # Acknowledgments (Strict <= 1/2 Page, ~110 words)
     add_h1(doc, "Acknowledgments")
-    add_paragraph_styled(doc, "[Insert acknowledgments expressing gratitude to Almighty Allah, advisors, hospital/organization leadership, faculty, and family here. Guideline: Half a page or less (<= 1/2 page, ~100-120 words). Strictly 100% English.]")
+    add_paragraph_styled(doc, "[Insert acknowledgments expressing gratitude to Almighty Allah, academic advisor (Dr. [Advisor Name]), hospital/organization leadership, faculty, and family here. Guideline: Half a page or less (<= 1/2 page, ~100-120 words). Strictly 100% English.]")
     doc.add_page_break()
 
     # Single Table of Contents (No duplicate before cover page)
@@ -118,7 +118,7 @@ def make_clean_template():
     add_h3(doc, "Relevant Work")
     add_paragraph_styled(doc, "[Insert relevant institutional ecosystem and regional healthcare network overview.]")
     add_h3(doc, "1.2.1 What is Training Organization.?")
-    add_paragraph_styled(doc, "[Insert introductory overview of the training entity. Note: Insert Figure 1.1 immediately beneath this opening paragraph.]")
+    add_paragraph_styled(doc, "[Insert introductory overview of the training entity. Note: Insert Figure 1.1 immediately beneath this opening paragraph. Use generic prose reference (e.g. 'As illustrated in the facility image...') without hardcoding static figure numbers.]")
     add_h3(doc, "1.2.2 History of Training Organization")
     add_paragraph_styled(doc, "[Insert historical background, founding milestones, and expansion phases.]")
     add_h3(doc, "1.2.3 Overview of Training Organization")
@@ -158,13 +158,11 @@ def make_clean_template():
     add_h2(doc, "3.5 Project Development Process")
     add_paragraph_styled(doc, "[Detail the technology stack, development tools, stakeholder roles, functional requirements, and non-functional guarantees.]")
     add_h2(doc, "3.6 System Design Diagrams")
-    add_paragraph_styled(doc, "[Embed and analyze Use Case diagrams, Entity-Relationship diagrams, Sequence diagrams, and Activity flowcharts.]")
+    add_paragraph_styled(doc, "[Embed and analyze Use Case diagrams, Entity-Relationship diagrams, Sequence diagrams, and Activity flowcharts. Note: Refer to diagrams generically (e.g. 'As modeled in the Use Case diagram...', 'The sequence diagram demonstrates...') rather than static numbers.]")
     add_h2(doc, "3.7 System Interfaces Overview")
-    add_paragraph_styled(doc, "[Present role-specific user interface screenshots, accompanied by at least two lines of functional explanation per image.]")
+    add_paragraph_styled(doc, "[Present role-specific user interface screenshots, accompanied by at least two lines of functional explanation per image. Rule: Refer to screenshots generically without hardcoding static figure numbers in prose.]")
     add_h2(doc, "3.8 Testing")
     add_paragraph_styled(doc, "[Detail unit testing, integration testing, security vulnerability auditing, and user acceptance scenarios.]")
-    add_h2(doc, "3.9 Future Work")
-    add_paragraph_styled(doc, "[Identify prospective enhancements, mobile app extensions, and external system integrations.]")
     doc.add_page_break()
 
     # Chapter IV
