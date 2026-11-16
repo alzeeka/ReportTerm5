@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مخصص ثيمات وحدود تقارير التدريب التعاوني — ReportTerm5 Customizer</title>
+  <style>
+    :root {
+      --bg-app: #f1f5f9;
+      --card-bg: #ffffff;
+      --card-border: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --success: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Arial, system-ui, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-app);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    header {
+      background: #1e293b;
+      color: white;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    header p {
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background-color: #2563eb;
+      color: white;
+    }
+    .btn-primary:hover {
+      background-color: #1d4ed8;
+    }
+
+    .btn-success {
+      background-color: #059669;
+      color: white;
+    }
+    .btn-success:hover {
+      background-color: #047857;
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      border-color: #cbd5e1;
+      color: #334155;
+    }
+    .btn-outline:hover {
+      background-color: #f8fafc;
+      border-color: #94a3b8;
+    }
+
+    /* Main Container */
+    .app-layout {
+      display: grid;
+      grid-template-columns: 460px 1fr;
+      flex: 1;
+      overflow: hidden;
+      height: calc(100vh - 65px);
+    }
+
+    @media (max-width: 1024px) {
+      .app-layout {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+    }
+
+    /* Sidebar Controls */
+    .controls-panel {
+      background: var(--card-bg);
+      border-left: 1px solid var(--card-border);
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .section-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .control-group {
+      margin-bottom: 14px;
+    }
+
+    .control-label {
+      display: block;
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 6px;
+    }
+
+    .color-picker-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    input[type="color"] {
+      -webkit-appearance: none;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      width: 44px;
+      height: 38px;
+      cursor: pointer;
+      background: none;
+      padding: 2px;
+    }
+
+    input[type="color"]::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+
+    input[type="color"]::-webkit-color-swatch {
+      border: none;
+      border-radius: 4px;
+    }
+
+    .hex-input {
+      font-family: monospace;
+      font-size: 0.9rem;
+      padding: 8px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      width: 100px;
+      text-transform: uppercase;
+      text-align: center;
+      direction: ltr;
+    }
+
+    .palette-swatches {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .swatch {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 0 1px #cbd5e1;
+      transition: transform 0.1s ease;
+    }
+
+    .swatch:hover {
+      transform: scale(1.15);
+    }
+
+    select, input[type="text"] {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      background-color: white;
+      color: #1e293b;
+    }
+
+    /* Border Interactive Box Selector */
+    .border-box-designer {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .box-grid {
+      display: grid;
+      grid-template-columns: 50px 140px 50px;
+      grid-template-rows: 40px 140px 40px;
+      gap: 6px;
+      align-items: center;
+      justify-items: center;
+    }
+
+    .box-center {
+      grid-column: 2;
+      grid-row: 2;
+      width: 100%;
+      height: 100%;
+      background: white;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: #64748b;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .border-toggle-btn {
+      background: white;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+
+    .border-toggle-btn.active {
+      background: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+
+    .btn-t { width: 100%; height: 100%; grid-column: 2; grid-row: 1; }
+    .btn-b { width: 100%; height: 100%; grid-column: 2; grid-row: 3; }
+    .btn-l { width: 100%; height: 100%; grid-column: 3; grid-row: 2; }
+    .btn-r { width: 100%; height: 100%; grid-column: 1; grid-row: 2; }
+
+    .preset-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .pill {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.775rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: #334155;
+      transition: all 0.15s;
+    }
+
+    .pill:hover, .pill.active {
+      background: #1e293b;
+      color: white;
+      border-color: #1e293b;
+    }
+
+    /* Live Preview Area */
+    .preview-area {
+      background: #cbd5e1;
+      overflow-y: auto;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .preview-toolbar {
+      background: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 0.85rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .tab-btn {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.825rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: #475569;
+    }
+
+    .tab-btn.active {
+      background: #2563eb;
+      color: white;
+    }
+
+    /* Simulated A4 Paper */
+    .a4-paper {
+      width: 794px; /* standard 96dpi A4 width */
+      min-height: 1123px; /* standard 96dpi A4 height */
+      background: white;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      position: relative;
+      box-sizing: border-box;
+      transition: all 0.2s ease;
+      transform-origin: top center;
+    }
+
+    /* Page Border Layer (matches OpenXML pgBorders) */
+    .page-border-layer {
+      position: absolute;
+      top: 24px;
+      bottom: 24px;
+      left: 24px;
+      right: 24px;
+      pointer-events: none;
+      box-sizing: border-box;
+      transition: all 0.15s ease;
+    }
+
+    .page-content-padding {
+      padding: 56px 64px; /* 1 inch printable margins approx */
+      height: 100%;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Sample Elements Inside Preview */
+    .sample-h1 {
+      font-family: 'Times New Roman', serif;
+      font-size: 20pt;
+      font-weight: bold;
+      margin-bottom: 8px;
+      transition: color 0.15s ease;
+    }
+
+    .sample-h2 {
+      font-family: 'Times New Roman', serif;
+      font-size: 15pt;
+      font-weight: bold;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      transition: color 0.15s ease;
+    }
+
+    .sample-p {
+      font-family: 'Times New Roman', serif;
+      font-size: 12pt;
+      line-height: 1.5;
+      color: #111827;
+      margin-bottom: 12px;
+      text-align: justify;
+    }
+
+    .sample-table-container {
+      margin: 16px 0;
+    }
+
+    .sample-caption {
+      font-family: 'Times New Roman', serif;
+      font-size: 11pt;
+      font-style: italic;
+      color: #334155;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .sample-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Times New Roman', serif;
+      font-size: 10.5pt;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .sample-table th {
+      padding: 8px 10px;
+      text-align: center;
+      font-weight: bold;
+      transition: background-color 0.15s, color 0.15s;
+    }
+
+    .sample-table td {
+      padding: 7px 10px;
+      transition: background-color 0.15s, color 0.15s;
+    }
+
+    .page-footer-num {
+      margin-top: auto;
+      text-align: center;
+      font-family: 'Times New Roman', serif;
+      font-size: 11pt;
+      color: #475569;
+      padding-top: 20px;
+    }
+
+    /* Cover Page Sample */
+    .sample-cover {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      height: 100%;
+      padding-top: 20px;
+    }
+
+    .cover-logo {
+      width: 100px;
+      height: 100px;
+      background: #f1f5f9;
+      border: 1px dashed #cbd5e1;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-bottom: 16px;
+    }
+
+    /* Code Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-box {
+      background: white;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 800px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    pre code {
+      display: block;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 16px;
+      border-radius: 8px;
+      font-family: Consolas, monospace;
+      font-size: 0.85rem;
+      white-space: pre-wrap;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .modal-footer {
+      padding: 12px 20px;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0f172a;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      z-index: 200;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div>
+      <h1>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        مخصص ثيمات وحدود تقارير التدريب التعاوني (ReportTerm5)
+      </h1>
+      <p>تحكم كامل في حدود صفحات Word، ألوان الجداول، وألوان العناوين لتوليد برومبت فريد لكل مشروع</p>
+    </div>
+    <div class="top-actions">
+      <button class="btn btn-outline" style="color:white; border-color:#475569;" onclick="openSnippetModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+        عرض كود بايثون
+      </button>
+      <button class="btn btn-primary" onclick="copyMasterPrompt()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        نسخ البرومبت
+      </button>
+      <button class="btn btn-success" onclick="downloadMasterPrompt()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        تحميل MASTER_PROMPT.md
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Grid -->
+  <div class="app-layout">
+    
+    <!-- Controls Sidebar -->
+    <div class="controls-panel">
+      
+      <!-- Ready Presets -->
+      <div>
+        <div class="section-title">
+          <span>🎨 الثيمات الجاهزة (Quick Presets)</span>
+        </div>
+        <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 8px;">اختر ثيماً متناسقاً بضغطة زر أو خصص إعداداتك بالتفصيل:</p>
+        <div class="preset-pills">
+          <button class="pill active" onclick="applyPreset('navy')">الكحلي الأكاديمي</button>
+          <button class="pill" onclick="applyPreset('emerald')">الزمردي الراقي</button>
+          <button class="pill" onclick="applyPreset('burgundy')">العنابي الملكي</button>
+          <button class="pill" onclick="applyPreset('charcoal')">الرمادي الفحمي</button>
+          <button class="pill" onclick="applyPreset('teal')">الأزرق البترولي</button>
+          <button class="pill" onclick="applyPreset('gold')">الذهبي المعتمد</button>
+          <button class="pill" onclick="applyPreset('borderless')">المودرن (بدون إطار)</button>
+        </div>
+      </div>
+
+      <!-- Page Borders Section -->
+      <div>
+        <div class="section-title">
+          <span>📑 حدود صفحة الـ Word (Page Borders)</span>
+        </div>
+        
+        <div class="control-group">
+          <label class="control-label">أطراف الحدود المفعلة (Border Sides)</label>
+          <div class="border-box-designer">
+            <div class="preset-pills" style="margin-bottom: 8px; justify-content: center;">
+              <span class="pill" onclick="setSidesPreset('none')">بدون حدود</span>
+              <span class="pill" onclick="setSidesPreset('all')">إطار كامل (Box)</span>
+              <span class="pill" onclick="setSidesPreset('top-bottom')">أعلى وأسفل</span>
+              <span class="pill" onclick="setSidesPreset('left-only')">يسار فقط</span>
+              <span class="pill" onclick="setSidesPreset('right-only')">يمين فقط</span>
+            </div>
+            
+            <div class="box-grid">
+              <button id="btn-border-top" class="border-toggle-btn btn-t active" onclick="toggleSide('top')">أعلى ▲</button>
+              <button id="btn-border-right" class="border-toggle-btn btn-r" onclick="toggleSide('right')">يمين ▶</button>
+              <div class="box-center" id="box-center-preview">معاينة الإطار</div>
+              <button id="btn-border-left" class="border-toggle-btn btn-l" onclick="toggleSide('left')">◀ يسار</button>
+              <button id="btn-border-bottom" class="border-toggle-btn btn-b active" onclick="toggleSide('bottom')">أسفل ▼</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="control-group">
+            <label class="control-label">شكل خط الإطار (Style)</label>
+            <select id="border-style" onchange="updateTheme()">
+              <option value="single">خط مفرد (Single)</option>
+              <option value="double">خط مزدوج (Double)</option>
+              <option value="triple">خط ثلاثي (Triple)</option>
+              <option value="thickThin">عريض ورفيع (Thick-Thin)</option>
+              <option value="dashed">متقطع (Dashed)</option>
+              <option value="dotted">منقط (Dotted)</option>
+              <option value="wave">متموج (Wave)</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">سمك خط الإطار (Width)</label>
+            <select id="border-sz" onchange="updateTheme()">
+              <option value="4">0.5 pt (w:sz="4")</option>
+              <option value="8">1.0 pt (w:sz="8")</option>
+              <option value="12">1.5 pt (w:sz="12")</option>
+              <option value="18" selected>2.25 pt (w:sz="18") [شائع]</option>
+              <option value="24">3.0 pt (w:sz="24")</option>
+              <option value="36">4.5 pt (w:sz="36")</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">لون إطار الصفحة (Border Color)</label>
+          <div class="color-picker-row">
+            <input type="color" id="border-color" value="#1B3A5C" onchange="syncColorInput('border-color', 'border-color-hex')">
+            <input type="text" id="border-color-hex" class="hex-input" value="1B3A5C" maxlength="6" onchange="syncHexInput('border-color-hex', 'border-color')">
+          </div>
+          <div class="palette-swatches">
+            <div class="swatch" style="background:#1B3A5C;" onclick="setColor('border-color', '1B3A5C')"></div>
+            <div class="swatch" style="background:#CC9900;" onclick="setColor('border-color', 'CC9900')"></div>
+            <div class="swatch" style="background:#0F766E;" onclick="setColor('border-color', '0F766E')"></div>
+            <div class="swatch" style="background:#831843;" onclick="setColor('border-color', '831843')"></div>
+            <div class="swatch" style="background:#334155;" onclick="setColor('border-color', '334155')"></div>
+            <div class="swatch" style="background:#000000;" onclick="setColor('border-color', '000000')"></div>
+            <div class="swatch" style="background:#2563EB;" onclick="setColor('border-color', '2563EB')"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Table Styling Section -->
+      <div>
+        <div class="section-title">
+          <span>📊 تنسيق وألوان الجداول (Table Styling)</span>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">لون خلفية ترويسة الجدول (Header Background)</label>
+          <div class="color-picker-row">
+            <input type="color" id="tbl-hdr-bg" value="#1B3A5C" onchange="syncColorInput('tbl-hdr-bg', 'tbl-hdr-bg-hex')">
+            <input type="text" id="tbl-hdr-bg-hex" class="hex-input" value="1B3A5C" maxlength="6" onchange="syncHexInput('tbl-hdr-bg-hex', 'tbl-hdr-bg')">
+          </div>
+          <div class="palette-swatches">
+            <div class="swatch" style="background:#1B3A5C;" onclick="setColor('tbl-hdr-bg', '1B3A5C')"></div>
+            <div class="swatch" style="background:#0F766E;" onclick="setColor('tbl-hdr-bg', '0F766E')"></div>
+            <div class="swatch" style="background:#831843;" onclick="setColor('tbl-hdr-bg', '831843')"></div>
+            <div class="swatch" style="background:#1E293B;" onclick="setColor('tbl-hdr-bg', '1E293B')"></div>
+            <div class="swatch" style="background:#1E3A8A;" onclick="setColor('tbl-hdr-bg', '1E3A8A')"></div>
+            <div class="swatch" style="background:#701A75;" onclick="setColor('tbl-hdr-bg', '701A75')"></div>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">لون نص ترويسة الجدول (Header Text Color)</label>
+          <div class="color-picker-row">
+            <input type="color" id="tbl-hdr-txt" value="#FFFFFF" onchange="syncColorInput('tbl-hdr-txt', 'tbl-hdr-txt-hex')">
+            <input type="text" id="tbl-hdr-txt-hex" class="hex-input" value="FFFFFF" maxlength="6" onchange="syncHexInput('tbl-hdr-txt-hex', 'tbl-hdr-txt')">
+          </div>
+          <div class="palette-swatches">
+            <div class="swatch" style="background:#FFFFFF;" onclick="setColor('tbl-hdr-txt', 'FFFFFF')"></div>
+            <div class="swatch" style="background:#FEF08A;" onclick="setColor('tbl-hdr-txt', 'FEF08A')"></div>
+            <div class="swatch" style="background:#E2E8F0;" onclick="setColor('tbl-hdr-txt', 'E2E8F0')"></div>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">تظليل الصفوف التبادلي (Zebra Striping Fill)</label>
+          <div class="color-picker-row">
+            <input type="color" id="tbl-alt-bg" value="#F9FBFC" onchange="syncColorInput('tbl-alt-bg', 'tbl-alt-bg-hex')">
+            <input type="text" id="tbl-alt-bg-hex" class="hex-input" value="F9FBFC" maxlength="6" onchange="syncHexInput('tbl-alt-bg-hex', 'tbl-alt-bg')">
+          </div>
+          <div class="palette-swatches">
+            <div class="swatch" style="background:#F9FBFC;" onclick="setColor('tbl-alt-bg', 'F9FBFC')"></div>
+            <div class="swatch" style="background:#F1F5F9;" onclick="setColor('tbl-alt-bg', 'F1F5F9')"></div>
+            <div class="swatch" style="background:#F0FDF4;" onclick="setColor('tbl-alt-bg', 'F0FDF4')"></div>
+            <div class="swatch" style="background:#FFFBEB;" onclick="setColor('tbl-alt-bg', 'FFFBEB')"></div>
+            <div class="swatch" style="background:#FFFFFF;" onclick="setColor('tbl-alt-bg', 'FFFFFF')"></div>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">لون حدود شبكة الجدول (Table Grid Border)</label>
+          <div class="color-picker-row">
+            <input type="color" id="tbl-bdr-color" value="#1B3A5C" onchange="syncColorInput('tbl-bdr-color', 'tbl-bdr-color-hex')">
+            <input type="text" id="tbl-bdr-color-hex" class="hex-input" value="1B3A5C" maxlength="6" onchange="syncHexInput('tbl-bdr-color-hex', 'tbl-bdr-color')">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Headings Palette Section -->
+      <div>
+        <div class="section-title">
+          <span>🖋️ ألوان العناوين الرئيسية (Headings Palette)</span>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">لون العنوان الرئيسي Heading 1 وعناوين الغلاف</label>
+          <div class="color-picker-row">
+            <input type="color" id="color-h1" value="#1B3A5C" onchange="syncColorInput('color-h1', 'color-h1-hex')">
+            <input type="text" id="color-h1-hex" class="hex-input" value="1B3A5C" maxlength="6" onchange="syncHexInput('color-h1-hex', 'color-h1')">
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">لون العناوين الفرعية Heading 2 و Heading 3</label>
+          <div class="color-picker-row">
+            <input type="color" id="color-h2" value="#2E5D8A" onchange="syncColorInput('color-h2', 'color-h2-hex')">
+            <input type="text" id="color-h2-hex" class="hex-input" value="2E5D8A" maxlength="6" onchange="syncHexInput('color-h2-hex', 'color-h2')">
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Live Preview Panel -->
+    <div class="preview-area">
+      
+      <!-- Toolbar -->
+      <div class="preview-toolbar">
+        <span style="font-weight: 700; color: #1e293b;">👁️ معاينة حية:</span>
+        <div style="display: flex; gap: 4px; background: #f1f5f9; padding: 3px; border-radius: 6px;">
+          <button id="tab-chapter" class="tab-btn active" onclick="switchPreviewTab('chapter')">صفحة فصول التقرير</button>
+          <button id="tab-cover" class="tab-btn" onclick="switchPreviewTab('cover')">صفحة الغلاف</button>
+        </div>
+        <div style="margin-right: auto; display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 0.8rem; color: #64748b;">حجم المعاينة:</span>
+          <select id="zoom-select" style="width: auto; padding: 4px 8px; font-size: 0.8rem;" onchange="setZoom(this.value)">
+            <option value="0.75">75%</option>
+            <option value="0.85" selected>85% (ملائم)</option>
+            <option value="1.0">100% (حجم A4 الفعلي)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- A4 Sheet Container -->
+      <div id="a4-sheet" class="a4-paper" style="transform: scale(0.85);">
+        
+        <!-- Live OpenXML Page Border Layer -->
+        <div id="live-page-border" class="page-border-layer"></div>
+
+        <!-- Chapter Page Content -->
+        <div id="content-chapter" class="page-content-padding">
+          <div class="sample-h1" id="preview-h1">CHAPTER III:  COOP PROJECT</div>
+          <div class="sample-h2" id="preview-h2">3.5 Project Development Process & Core Entities</div>
+          <p class="sample-p">
+            The diagnostic decision-support system is engineered using a robust healthcare pipeline adhering strictly to international standards, including LOINC diagnostic catalogs and ICD-10 clinical classifications. The production architecture operates across fourteen normalized tables, ensuring high referential integrity and transactional safety.
+          </p>
+
+          <div class="sample-table-container">
+            <div class="sample-caption" id="preview-caption">Table 3.1: LOINC Standardized Laboratory Analytes Sample</div>
+            <table class="sample-table" id="preview-table">
+              <thead>
+                <tr>
+                  <th style="width: 25%;">Test Name</th>
+                  <th style="width: 20%;">LOINC Code</th>
+                  <th style="width: 25%;">Reference Range</th>
+                  <th style="width: 15%;">Unit</th>
+                  <th style="width: 15%;">Clinical Tier</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="text-align: center; font-weight: bold;">Fasting Blood Glucose</td>
+                  <td style="text-align: center;">1558-6</td>
+                  <td>70.0 – 99.0</td>
+                  <td style="text-align: center;">mg/dL</td>
+                  <td style="text-align: center;">Routine</td>
+                </tr>
+                <tr>
+                  <td style="text-align: center; font-weight: bold;">Serum Potassium (K+)</td>
+                  <td style="text-align: center;">2823-3</td>
+                  <td>3.5 – 5.1</td>
+                  <td style="text-align: center;">mmol/L</td>
+                  <td style="text-align: center; color: #dc2626; font-weight: bold;">Critical (STAT)</td>
+                </tr>
+                <tr>
+                  <td style="text-align: center; font-weight: bold;">Hemoglobin A1c</td>
+                  <td style="text-align: center;">4548-4</td>
+                  <td>4.0 – 5.6</td>
+                  <td style="text-align: center;">%</td>
+                  <td style="text-align: center;">Diagnostic</td>
+                </tr>
+                <tr>
+                  <td style="text-align: center; font-weight: bold;">Serum Creatinine</td>
+                  <td style="text-align: center;">2160-0</td>
+                  <td>0.70 – 1.30</td>
+                  <td style="text-align: center;">mg/dL</td>
+                  <td style="text-align: center;">Renal Panel</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p class="sample-p">
+            As detailed in the table above, clinical decision thresholds are continuously evaluated by deterministic verification engines to eliminate hallucinations before alerting physicians of life-threatening anomalies.
+          </p>
+
+          <div class="page-footer-num">14</div>
+        </div>
+
+        <!-- Cover Page Content (Hidden by default) -->
+        <div id="content-cover" class="page-content-padding" style="display: none;">
+          <div class="sample-cover">
+            <div class="cover-logo">شعار الجامعة</div>
+            <div style="font-family:'Times New Roman'; font-size:16pt; font-weight:bold; color:var(--h1-color, #1B3A5C); margin-bottom:4px;">University Of Hail</div>
+            <div style="font-family:'Times New Roman'; font-size:16pt; font-weight:bold; color:var(--h1-color, #1B3A5C); margin-bottom:4px;">College of Computer Science and Engineering</div>
+            <div style="font-family:'Times New Roman'; font-size:16pt; font-weight:bold; color:var(--h1-color, #1B3A5C); margin-bottom:32px;">Department of Computer Science</div>
+
+            <div style="font-family:'Times New Roman'; font-size:22pt; font-weight:bold; color:var(--h1-color, #1B3A5C); margin-bottom:6px;">Training Organization Name :</div>
+            <div style="font-family:'Times New Roman'; font-size:24pt; font-weight:bold; color:var(--h1-color, #1B3A5C); margin-bottom:40px;">Al-Hait General Hospital</div>
+
+            <div style="font-family:'Times New Roman'; font-size:17pt; font-weight:bold; color:var(--h1-color, #1B3A5C); margin-bottom:4px;">Under Supervision of Academic Advisor:</div>
+            <div style="font-family:'Times New Roman'; font-size:19pt; font-weight:bold; color:var(--h1-color, #1B3A5C); margin-bottom:36px;">Dr. Al-Bandari Al-Otaibi</div>
+
+            <div style="font-family:'Times New Roman'; font-size:15pt; font-weight:bold; color:var(--h1-color, #1B3A5C); margin-bottom:4px;">Submitted by:</div>
+            <div style="font-family:'Times New Roman'; font-size:17pt; font-weight:bold; color:var(--h1-color, #1B3A5C);">Shadia Essa Al-Enezi        | 202304937</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Python & XML Snippet Modal -->
+  <div id="snippet-modal" class="modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="font-size: 1.1rem; font-weight: 700;">كود Python و OpenXML للثيم الحالي</h3>
+        <button onclick="closeSnippetModal()" style="border:none; background:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.85rem; color: #475569; margin-bottom: 8px;">يمكنك نسخ هذه الإعدادات ولصقها مباشرة في ملف <code>report_builder_core.py</code>:</p>
+        <pre><code id="python-snippet-code"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeSnippetModal()">إغلاق</button>
+        <button class="btn btn-primary" onclick="copySnippetCode()">نسخ الكود</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">تم النسخ بنجاح!</div>
+
+  <script>
+    // State
+    const state = {
+      sides: { top: true, bottom: true, left: false, right: false },
+      borderStyle: 'single',
+      borderSz: '18', // 2.25pt in Word eighths of pt
+      borderColor: '1B3A5C',
+      tblHdrBg: '1B3A5C',
+      tblHdrTxt: 'FFFFFF',
+      tblAltBg: 'F9FBFC',
+      tblBdrColor: '1B3A5C',
+      colorH1: '1B3A5C',
+      colorH2: '2E5D8A',
+      activeTab: 'chapter'
+    };
+
+    // Preset Definitions
+    const PRESETS = {
+      navy: {
+        name: 'الكحلي الأكاديمي',
+        sides: { top: true, bottom: true, left: false, right: false },
+        borderStyle: 'single',
+        borderSz: '18',
+        borderColor: '1B3A5C',
+        tblHdrBg: '1B3A5C',
+        tblHdrTxt: 'FFFFFF',
+        tblAltBg: 'F9FBFC',
+        tblBdrColor: '1B3A5C',
+        colorH1: '1B3A5C',
+        colorH2: '2E5D8A'
+      },
+      emerald: {
+        name: 'الزمردي الراقي',
+        sides: { top: true, bottom: true, left: false, right: false },
+        borderStyle: 'double',
+        borderSz: '18',
+        borderColor: '0F766E',
+        tblHdrBg: '0F766E',
+        tblHdrTxt: 'FFFFFF',
+        tblAltBg: 'F0FDF4',
+        tblBdrColor: '0F766E',
+        colorH1: '0F766E',
+        colorH2: '0D9488'
+      },
+      burgundy: {
+        name: 'العنابي الملكي',
+        sides: { top: true, bottom: true, left: true, right: true },
+        borderStyle: 'single',
+        borderSz: '12',
+        borderColor: '831843',
+        tblHdrBg: '831843',
+        tblHdrTxt: 'FFFFFF',
+        tblAltBg: 'FDF2F8',
+        tblBdrColor: '831843',
+        colorH1: '831843',
+        colorH2: '9D174D'
+      },
+      charcoal: {
+        name: 'الرمادي الفحمي',
+        sides: { top: true, bottom: true, left: false, right: false },
+        borderStyle: 'single',
+        borderSz: '18',
+        borderColor: '334155',
+        tblHdrBg: '1E293B',
+        tblHdrTxt: 'FFFFFF',
+        tblAltBg: 'F1F5F9',
+        tblBdrColor: '475569',
+        colorH1: '0F172A',
+        colorH2: '334155'
+      },
+      teal: {
+        name: 'الأزرق البترولي',
+        sides: { top: false, bottom: false, left: true, right: false },
+        borderStyle: 'thickThin',
+        borderSz: '24',
+        borderColor: '0369A1',
+        tblHdrBg: '0369A1',
+        tblHdrTxt: 'FFFFFF',
+        tblAltBg: 'F0F9FF',
+        tblBdrColor: '0284C7',
+        colorH1: '0369A1',
+        colorH2: '0284C7'
+      },
+      gold: {
+        name: 'الذهبي المعتمد',
+        sides: { top: true, bottom: true, left: false, right: false },
+        borderStyle: 'single',
+        borderSz: '18',
+        borderColor: 'CC9900',
+        tblHdrBg: '1B3A5C',
+        tblHdrTxt: 'FFFFFF',
+        tblAltBg: 'FFFBEB',
+        tblBdrColor: 'CC9900',
+        colorH1: '1B3A5C',
+        colorH2: 'B45309'
+      },
+      borderless: {
+        name: 'المودرن (بدون إطار)',
+        sides: { top: false, bottom: false, left: false, right: false },
+        borderStyle: 'single',
+        borderSz: '8',
+        borderColor: 'E2E8F0',
+        tblHdrBg: '1E3A8A',
+        tblHdrTxt: 'FFFFFF',
+        tblAltBg: 'F8FAFC',
+        tblBdrColor: 'CBD5E1',
+        colorH1: '1E3A8A',
+        colorH2: '2563EB'
+      }
+    };
+
+    function applyPreset(presetKey) {
+      const p = PRESETS[presetKey];
+      if (!p) return;
+
+      state.sides = { ...p.sides };
+      state.borderStyle = p.borderStyle;
+      state.borderSz = p.borderSz;
+      state.borderColor = p.borderColor;
+      state.tblHdrBg = p.tblHdrBg;
+      state.tblHdrTxt = p.tblHdrTxt;
+      state.tblAltBg = p.tblAltBg;
+      state.tblBdrColor = p.tblBdrColor;
+      state.colorH1 = p.colorH1;
+      state.colorH2 = p.colorH2;
+
+      // Update UI Controls
+      document.getElementById('border-style').value = p.borderStyle;
+      document.getElementById('border-sz').value = p.borderSz;
+
+      setColorInputs('border-color', p.borderColor);
+      setColorInputs('tbl-hdr-bg', p.tblHdrBg);
+      setColorInputs('tbl-hdr-txt', p.tblHdrTxt);
+      setColorInputs('tbl-alt-bg', p.tblAltBg);
+      setColorInputs('tbl-bdr-color', p.tblBdrColor);
+      setColorInputs('color-h1', p.colorH1);
+      setColorInputs('color-h2', p.colorH2);
+
+      // Update pills
+      document.querySelectorAll('.preset-pills .pill').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.trim() === p.name);
+      });
+
+      updateSideButtonsUI();
+      renderLivePreview();
+    }
+
+    function setColorInputs(idPrefix, hex) {
+      document.getElementById(idPrefix).value = '#' + hex;
+      document.getElementById(idPrefix + '-hex').value = hex.toUpperCase();
+    }
+
+    function syncColorInput(pickerId, hexId) {
+      const hex = document.getElementById(pickerId).value.replace('#', '').toUpperCase();
+      document.getElementById(hexId).value = hex;
+      readInputsToState();
+      renderLivePreview();
+    }
+
+    function syncHexInput(hexId, pickerId) {
+      let hex = document.getElementById(hexId).value.replace('#', '').toUpperCase();
+      if (hex.length === 6) {
+        document.getElementById(pickerId).value = '#' + hex;
+        readInputsToState();
+        renderLivePreview();
+      }
+    }
+
+    function setColor(pickerId, hex) {
+      setColorInputs(pickerId, hex);
+      readInputsToState();
+      renderLivePreview();
+    }
+
+    function toggleSide(side) {
+      state.sides[side] = !state.sides[side];
+      updateSideButtonsUI();
+      renderLivePreview();
+    }
+
+    function setSidesPreset(preset) {
+      if (preset === 'none') {
+        state.sides = { top: false, bottom: false, left: false, right: false };
+      } else if (preset === 'all') {
+        state.sides = { top: true, bottom: true, left: true, right: true };
+      } else if (preset === 'top-bottom') {
+        state.sides = { top: true, bottom: true, left: false, right: false };
+      } else if (preset === 'left-only') {
+        state.sides = { top: false, bottom: false, left: true, right: false };
+      } else if (preset === 'right-only') {
+        state.sides = { top: false, bottom: false, left: false, right: true };
+      }
+      updateSideButtonsUI();
+      renderLivePreview();
+    }
+
+    function updateSideButtonsUI() {
+      document.getElementById('btn-border-top').classList.toggle('active', state.sides.top);
+      document.getElementById('btn-border-bottom').classList.toggle('active', state.sides.bottom);
+      document.getElementById('btn-border-left').classList.toggle('active', state.sides.left);
+      document.getElementById('btn-border-right').classList.toggle('active', state.sides.right);
+
+      const centerBox = document.getElementById('box-center-preview');
+      const cssStyle = getCssBorderStyle(state.borderStyle);
+      const cssWidth = (parseInt(state.borderSz) / 8 * 1.33).toFixed(1) + 'px';
+      const color = '#' + state.borderColor;
+
+      centerBox.style.borderTop = state.sides.top ? `${cssWidth} ${cssStyle} ${color}` : 'none';
+      centerBox.style.borderBottom = state.sides.bottom ? `${cssWidth} ${cssStyle} ${color}` : 'none';
+      centerBox.style.borderLeft = state.sides.left ? `${cssWidth} ${cssStyle} ${color}` : 'none';
+      centerBox.style.borderRight = state.sides.right ? `${cssWidth} ${cssStyle} ${color}` : 'none';
+    }
+
+    function readInputsToState() {
+      state.borderStyle = document.getElementById('border-style').value;
+      state.borderSz = document.getElementById('border-sz').value;
+      state.borderColor = document.getElementById('border-color-hex').value;
+      state.tblHdrBg = document.getElementById('tbl-hdr-bg-hex').value;
+      state.tblHdrTxt = document.getElementById('tbl-hdr-txt-hex').value;
+      state.tblAltBg = document.getElementById('tbl-alt-bg-hex').value;
+      state.tblBdrColor = document.getElementById('tbl-bdr-color-hex').value;
+      state.colorH1 = document.getElementById('color-h1-hex').value;
+      state.colorH2 = document.getElementById('color-h2-hex').value;
+    }
+
+    function updateTheme() {
+      readInputsToState();
+      updateSideButtonsUI();
+      renderLivePreview();
+    }
+
+    function getCssBorderStyle(wordVal) {
+      switch (wordVal) {
+        case 'double': return 'double';
+        case 'triple': return 'double';
+        case 'dashed': return 'dashed';
+        case 'dotted': return 'dotted';
+        case 'thickThin': return 'double';
+        case 'wave': return 'dashed';
+        default: return 'solid';
+      }
+    }
+
+    function renderLivePreview() {
+      // 1. Page Border Layer
+      const borderLayer = document.getElementById('live-page-border');
+      const cssStyle = getCssBorderStyle(state.borderStyle);
+      const pxWidth = (parseInt(state.borderSz) / 8 * 1.5).toFixed(1) + 'px';
+      const color = '#' + state.borderColor;
+
+      borderLayer.style.borderTop = state.sides.top ? `${pxWidth} ${cssStyle} ${color}` : 'none';
+      borderLayer.style.borderBottom = state.sides.bottom ? `${pxWidth} ${cssStyle} ${color}` : 'none';
+      borderLayer.style.borderLeft = state.sides.left ? `${pxWidth} ${cssStyle} ${color}` : 'none';
+      borderLayer.style.borderRight = state.sides.right ? `${pxWidth} ${cssStyle} ${color}` : 'none';
+
+      // 2. Headings Colors
+      document.getElementById('preview-h1').style.color = '#' + state.colorH1;
+      document.getElementById('preview-h2').style.color = '#' + state.colorH2;
+
+      // Cover Page Title Colors
+      document.querySelectorAll('#content-cover div').forEach(div => {
+        if (div.style.color && div.style.color.includes('var')) {
+          div.style.color = '#' + state.colorH1;
+        }
+      });
+
+      // 3. Table Header
+      const thList = document.querySelectorAll('#preview-table th');
+      thList.forEach(th => {
+        th.style.backgroundColor = '#' + state.tblHdrBg;
+        th.style.color = '#' + state.tblHdrTxt;
+        th.style.border = `1px solid #${state.tblBdrColor}`;
+      });
+
+      // 4. Table Alternating Rows & Borders
+      const rows = document.querySelectorAll('#preview-table tbody tr');
+      rows.forEach((tr, index) => {
+        const isAlt = index % 2 === 1;
+        const bg = isAlt ? '#' + state.tblAltBg : '#FFFFFF';
+        tr.querySelectorAll('td').forEach(td => {
+          td.style.backgroundColor = bg;
+          td.style.border = `1px solid #${state.tblBdrColor}`;
+        });
+      });
+    }
+
+    function switchPreviewTab(tab) {
+      state.activeTab = tab;
+      document.getElementById('tab-chapter').classList.toggle('active', tab === 'chapter');
+      document.getElementById('tab-cover').classList.toggle('active', tab === 'cover');
+
+      document.getElementById('content-chapter').style.display = tab === 'chapter' ? 'flex' : 'none';
+      document.getElementById('content-cover').style.display = tab === 'cover' ? 'flex' : 'none';
+    }
+
+    function setZoom(val) {
+      document.getElementById('a4-sheet').style.transform = `scale(${val})`;
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    // Build Master Prompt Markdown Content
+    function generatePromptMarkdown() {
+      const anyBorders = state.sides.top || state.sides.bottom || state.sides.left || state.sides.right;
+      
+      let borderXmlTags = '';
+      if (anyBorders) {
+        borderXmlTags = '  <w:pgBorders w:offsetFrom="page">\n';
+        if (state.sides.top) borderXmlTags += `    <w:top w:val="${state.borderStyle}" w:sz="${state.borderSz}" w:space="24" w:color="${state.borderColor}"/>\n`;
+        if (state.sides.bottom) borderXmlTags += `    <w:bottom w:val="${state.borderStyle}" w:sz="${state.borderSz}" w:space="24" w:color="${state.borderColor}"/>\n`;
+        if (state.sides.left) borderXmlTags += `    <w:left w:val="${state.borderStyle}" w:sz="${state.borderSz}" w:space="24" w:color="${state.borderColor}"/>\n`;
+        if (state.sides.right) borderXmlTags += `    <w:right w:val="${state.borderStyle}" w:sz="${state.borderSz}" w:space="24" w:color="${state.borderColor}"/>\n`;
+        borderXmlTags += '  </w:pgBorders>';
+      } else {
+        borderXmlTags = '  <!-- بدون حدود للصفحة (Borderless Page) -->\n  <w:pgBorders w:offsetFrom="page"/>';
+      }
+
+      return `# البرومبت الشامل المعتمد لتقارير التدريب التعاوني (ReportTerm5)
+# Master Academic System Prompt — COOP Final Reports (Term 5 Standard)
+
+> هذا الملف مخصص للنسخ المباشر واستخدامه في أي نموذج ذكاء اصطناعي (LLM) لتوليد تقارير التدريب التعاوني بصيغة Word DOCX لكافة مشاريع طلاب جامعة حائل وفق الثيم المخصص المعتمد أدناه.
+
+---
+
+\`\`\`markdown
+أنت خبير أكاديمي وهندسي رفيع المستوى في إعداد تقارير التدريب التعاوني (COOP Final Reports) بصيغة DOCX لطلاب جامعة حائل (كلية علوم وهندسة الحاسب الآلي).
+
+المرجع المعياري الحصري المعتمد: مستودع ReportTerm5 (القالب المحدث Term 5).
+رابط المستودع: https://github.com/alzeeka/ReportTerm5.git
+
+================================================================================
+إعدادات الثيم والحدود المعتمدة لهذا المشروع (Project-Specific Visual Theme):
+================================================================================
+
+1. حدود الصفحة في ملف Word (Page Borders):
+   - حالة الإطار: ${anyBorders ? 'مفعل بأطراف محددة' : 'بدون حدود نهائياً (Borderless)'}
+   - أطراف الحدود: ${[state.sides.top ? 'أعلى (Top)' : '', state.sides.bottom ? 'أسفل (Bottom)' : '', state.sides.left ? 'يسار (Left)' : '', state.sides.right ? 'يمين (Right)' : ''].filter(Boolean).join(' + ') || 'None'}
+   - شكل خط الإطار (w:val): ${state.borderStyle}
+   - سمك الخط (w:sz): ${state.borderSz} (${(parseInt(state.borderSz)/8).toFixed(2)} pt)
+   - كود لون الإطار (Hex): #${state.borderColor}
+   - كود OpenXML لحدود الصفحة:
+\`\`\`xml
+${borderXmlTags}
+\`\`\`
+
+2. ألوان العناوين والخطوط (Headings Palette):
+   - العنوان الرئيسي Heading 1 وعناوين الغلاف: #${state.colorH1}
+   - العناوين الفرعية Heading 2 و Heading 3: #${state.colorH2}
+   - خط التقرير المعتمد: Times New Roman حصراً (Body 12pt, 1.5 line spacing, 10pt space after).
+
+3. تنسيق وهوية الجداول (Table Visual Styling):
+   - خلفية ترويسة الجدول (Header Row Shading): #${state.tblHdrBg}
+   - لون نص الترويسة (Header Text Color): #${state.tblHdrTxt} (Bold 11pt)
+   - تظليل الصفوف التبادلي (Alternating Rows / Zebra Fill): #${state.tblAltBg}
+   - خلفية الصفوف العادية: #FFFFFF ونص أسود #000000 (10.5pt)
+   - لون حدود شبكة الجدول (Table Grid Border Color): #${state.tblBdrColor} (0.5pt solid)
+
+================================================================================
+القواعد الحاكمة والإلزامية (Golden Rules & Strict Specifications):
+================================================================================
+
+1. إعدادات المستند ولغته:
+   - اللغة: الإنجليزية الأكاديمية الاحترافية بالكامل 100% (Strict 100% English). يمنع منعاً باتاً إدراج أي حروف أو نصوص أو أقواس باللغة العربية داخل متن التقرير أو العناوين أو المراجع.
+   - حجم الصفحة: A4 Portrait (210mm × 297mm)، الهوامش 1 inch من كافة الجهات.
+   - عرض الصور والمخططات: 6.27 inch في المنتصف مع الحفاظ التام على أبعاد الصورة الأصلية.
+   - الإشارة للجداول والصور في الشرح: يمنع منعاً باتاً كتابة أرقام ثابتة للجداول أو الأشكال في النص السردي (مثل Table 3.1 أو Figure 3.2)، بل يُشار إليها بصيغ عامة وصفية حصراً (مثل: "in the table below", "as summarized in the table", "as shown in the diagram").
+
+2. بنية الأقسام الثلاثة وترقيم الصفحات (3-Section Architecture & Page Numbering):
+   - **Section 0 (صفحة الغلاف - Cover Page):** معزولة برمجياً تماماً بدون ترويسة أو تذييل وبدون أي ترقيم صفحات (Unnumbered).
+   - **Section 1 (الصفحات التمهيدية - Preliminary Pages):** تبدأ من Abstract وتنتهي بـ Introduction. ترقيم الصفحات لاتيني صغير حصراً (lowerRoman: i, ii, iii...).
+     * المستخلص (Abstract): يضبط طوله ليكون 3/4 صفحة حصراً (~200 إلى 220 كلمة). بدون عبارة متطلبات التخرج العامة.
+     * الشكر والتقدير (Acknowledgments): نصف صفحة أو أقل (~100 إلى 120 كلمة مع لقب Dr.).
+     * جدول المحتويات الموحد (TOC)، قائمة الأشكال، قائمة الجداول، والمقدمة.
+   - **Section 2 (فصول التقرير الرئيسية - Main Chapters):** تبدأ من Chapter I وحتى نهاية References وترقم بالأرقام العربية (decimal: 1, 2, 3...) تبدأ من الرقم 1.
+
+3. فصول التقرير الأربعة الإلزامية:
+   - **Chapter I: INTRODUCTION:** يتحدث بالكامل وبشكل موسع عن جهة التدريب وتاريخها ورؤيتها وأقسامها ولا يذكر دور الطالبة الشخصي. إدراج صورة المبنى الرئيسي Figure 1.1 أسفل الفقرة الافتتاحية للقسم 1.2.1 مباشرة.
+   - **Chapter II: TASKS & EXPERIENCES:** يدمج المهام الفنية والشبكات دون ذكر لأي شهور أو مدد زمنية (2.1.1 Technical support, 2.1.2 Networks & Communications, 2.2.1 Experiences).
+   - **Chapter III: COOP PROJECT:** المشروع التطبيقي المتكامل ومنهجية أجايل (3.4.1 Agile Methodology مع المخطط الدائري)، وقاعدة منع إجراء التحاليل المكررة لمدة 30 يوماً أو حسب إعدادات المنصة، وبيئة العمل PHP 8.3، وتوضيح أن قاعدة البيانات 14 جدولاً معيارياً مع إبراز الكيانات الأساسية في Chen ERD. (قسم الأعمال المستقبلية Future Work محذوف نهائياً).
+   - **Chapter IV: CONCLUSION & RECOMMENDATIONS:** الخلاصة والتوصيات الاستراتيجية.
+   - **References:** مراجع بنمط APA بروابط نشطة. (الملحق Appendix محذوف نهائياً).
+
+4. السلامة البرمجية لحقول Word (XML Fields):
+   - جميع حقول التسميات والفهارس (fldChar, instrText) يجب أن تقع داخل عناصر <w:r> حصراً وبلا استثناء.
+   - تحديث الفهارس وأرقام الصفحات آلياً عبر سكربت Word COM مع ضبط DisplayAlerts = 0.
+\`\`\`
+`;
+    }
+
+    function generatePythonSnippet() {
+      return `# ==============================================================================
+# ReportTerm5 - Custom Theme Configuration for report_builder_core.py
+# ==============================================================================
+
+from docx.shared import RGBColor
+
+# 1. Colors & Palette
+HEX_NAVY = "${state.tblHdrBg}"           # Table header background fill
+HEX_LIGHT_ROW = "${state.tblAltBg}"       # Alternating zebra rows fill
+HEX_BORDER = "${state.tblBdrColor}"       # Table grid borders
+COLOR_DARK_BLUE = RGBColor(0x${state.colorH1.slice(0,2)}, 0x${state.colorH1.slice(2,4)}, 0x${state.colorH1.slice(4,6)}) # H1 & Cover
+COLOR_MED_BLUE = RGBColor(0x${state.colorH2.slice(0,2)}, 0x${state.colorH2.slice(2,4)}, 0x${state.colorH2.slice(4,6)})  # H2 & H3
+
+# 2. OpenXML Page Borders XML Definition
+PAGE_BORDERS_XML = """<w:pgBorders xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" w:offsetFrom="page">
+${state.sides.top ? `  <w:top w:val="${state.borderStyle}" w:sz="${state.borderSz}" w:space="24" w:color="${state.borderColor}"/>\n` : ''}${state.sides.bottom ? `  <w:bottom w:val="${state.borderStyle}" w:sz="${state.borderSz}" w:space="24" w:color="${state.borderColor}"/>\n` : ''}${state.sides.left ? `  <w:left w:val="${state.borderStyle}" w:sz="${state.borderSz}" w:space="24" w:color="${state.borderColor}"/>\n` : ''}${state.sides.right ? `  <w:right w:val="${state.borderStyle}" w:sz="${state.borderSz}" w:space="24" w:color="${state.borderColor}"/>\n` : ''}</w:pgBorders>"""
+
+# 3. Applying Page Borders in Section properties:
+# def apply_page_borders(section_elem):
+#     from docx.oxml import parse_xml
+#     old_borders = section_elem.xpath('w:pgBorders')
+#     for b in old_borders:
+#         section_elem.remove(b)
+#     section_elem.append(parse_xml(PAGE_BORDERS_XML))
+`;
+    }
+
+    function copyMasterPrompt() {
+      const content = generatePromptMarkdown();
+      navigator.clipboard.writeText(content).then(() => {
+        showToast('تم نسخ البرومبت الشامل إلى الحافظة بنجاح!');
+      });
+    }
+
+    function downloadMasterPrompt() {
+      const content = generatePromptMarkdown();
+      const blob = new Blob([content], { type: 'text/markdown;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'MASTER_PROMPT.md';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      showToast('تم تحميل ملف MASTER_PROMPT.md بنجاح!');
+    }
+
+    function openSnippetModal() {
+      document.getElementById('python-snippet-code').textContent = generatePythonSnippet();
+      document.getElementById('snippet-modal').classList.add('active');
+    }
+
+    function closeSnippetModal() {
+      document.getElementById('snippet-modal').classList.remove('active');
+    }
+
+    function copySnippetCode() {
+      const code = document.getElementById('python-snippet-code').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        showToast('تم نسخ كود بايثون بنجاح!');
+        closeSnippetModal();
+      });
+    }
+
+    // Initialize on load
+    window.addEventListener('DOMContentLoaded', () => {
+      applyPreset('navy');
+    });
+  </script>
+</body>
+</html>
